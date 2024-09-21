@@ -51,6 +51,10 @@ private:
     const GLint m_width = 1920;
     const GLint m_height = 1080;
     bool m_isRunning = true;
+
+    unsigned int  shaderProgram;
+    unsigned int uniformXmove;
+    unsigned int triOffsetX = 0.f;
 };
 
 

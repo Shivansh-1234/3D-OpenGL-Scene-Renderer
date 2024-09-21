@@ -52,6 +52,62 @@ void WindowManager::createWindow(const std::string& title, const GLint width, co
     }
 
     glViewport(0, 0, m_width, m_height);
+
+
+    float vertices[] = {
+        -0.5f, -0.5f, 0.0f,
+         0.5f, -0.5f, 0.0f,
+         0.0f,  0.5f, 0.0f
+    };
+
+    unsigned int VBO;
+    glGenBuffers(1, &VBO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    const char *vertexShaderSource = "#version 330 core\n"
+    "layout (location = 0) in vec3 aPos;\n"
+    "uniform float xMove; \n"
+    "void main()\n"
+    "{\n"
+    "   gl_Position = vec4(aPos.x + xMove, aPos.y, aPos.z, 1.0);\n"
+    "}\0";
+
+    unsigned int vertexShader;
+    vertexShader = glCreateShader(GL_VERTEX_SHADER);
+
+    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+    glCompileShader(vertexShader);
+
+    const char* fragmentShaderSource = "#version 330 core\n"
+    "out vec4 FragColor;\n"
+    "void main()\n"
+    "{\n"
+    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+    "}\n\0";
+
+    unsigned int fragmentShader;
+    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+    glCompileShader(fragmentShader);
+
+    //unsigned int shaderProgram;
+    shaderProgram = glCreateProgram();
+
+    glAttachShader(shaderProgram, vertexShader);
+    glAttachShader(shaderProgram, fragmentShader);
+    glLinkProgram(shaderProgram);
+
+
+    uniformXmove = glGetUniformLocation(shaderProgram, "xMove");
+
+
+
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
 }
 
 void WindowManager::updateWindow()
@@ -62,6 +118,29 @@ void WindowManager::updateWindow()
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
+
+        glUseProgram(shaderProgram);
+
+
+
+        const Uint8* state = SDL_GetKeyboardState(NULL);
+
+        if(state[SDL_SCANCODE_D])
+        {
+            triOffsetX += 1.f;
+        }
+
+        if(state[SDL_SCANCODE_A])
+        {
+            triOffsetX -= 1.f;
+        }
+
+        glUniform1f(uniformXmove, triOffsetX);
+
+
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+
+
 
         SDL_GL_SwapWindow(m_window);
 

@@ -24,3 +24,7 @@ target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARY} ${SDL2_IMAGE_LIBRARIES})
 add_subdirectory(third_party/glad)
 include_directories(third_party/glad/include)
 target_link_libraries(${PROJECT_NAME} glad)
+
+# --- GLM SETUP ---
+set(GLM_DIR "${CMAKE_SOURCE_DIR}/third_party/glm")
+include_directories(${GLM_DIR})
