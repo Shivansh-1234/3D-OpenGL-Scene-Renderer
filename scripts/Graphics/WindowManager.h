@@ -7,6 +7,10 @@
 
 #include "../DEPENDENCIES.h"
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 
 class WindowManager {
 
@@ -53,8 +57,9 @@ private:
     bool m_isRunning = true;
 
     unsigned int  shaderProgram;
-    unsigned int uniformXmove;
-    unsigned int triOffsetX = 0.f;
+    unsigned int uniformModel;
+    float triOffsetX = 0.f;
+
 };
 
 
