@@ -6,6 +6,10 @@
 
 #include <glad/glad.h>
 
+void WindowManager::initStuff() {
+}
+
+
 
 void pollEvents(SDL_Event& event, bool& isRunning) {
     while(SDL_PollEvent(&event)) {
@@ -21,8 +25,7 @@ void pollEvents(SDL_Event& event, bool& isRunning) {
     }
 }
 
-void WindowManager::createWindow(const std::string& title, const GLint width, const GLint height)
-{
+void WindowManager::createWindow(const std::string& title, const GLint width, const GLint height) {
     if(SDL_Init(SDL_INIT_VIDEO) != 0){
         std::cout  << "Failed to INIT SDL VIDEO : " << SDL_GetError() << std::endl;
         exit(-1);
@@ -52,104 +55,40 @@ void WindowManager::createWindow(const std::string& title, const GLint width, co
         exit(-1);
     }
 
+    initStuff();
+
 
     glEnable(GL_DEPTH_TEST);
 
     glViewport(0, 0, m_width, m_height);
 
-    unsigned int indices[] = {
+
+
+    std::vector<Vertex> vertices = {
+        {glm::vec3(-1.f, -1.f, 0.f)},
+        {glm::vec3(0.f, -1.f, 1.f)},
+        {glm::vec3(1.f, -1.f, 0.f)},
+        {glm::vec3(0.f, 1.f, 0.f)}
+    };
+
+    std::vector<GLuint> indices = {
         0, 3, 1,
         1, 3, 2,
         2, 3, 0,
         0, 1, 2
     };
 
-    float vertices[] = {
-        -1.f, -1.f, 0.f,
-         0.f, -1.f, 1.f,
-         1.f, -1.f, 0.f,
-         0.f, 1.f, 0.f
-    };
-
-    unsigned int VAO;
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
-
-    unsigned int IBO;
-    glGenBuffers(1, &IBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    unsigned int VBO;
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    const char *vertexShaderSource = "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "out vec4 vCol;\n"
-    "uniform mat4 model; \n"
-    "uniform mat4 projection;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = projection * model * vec4(aPos, 1.0);\n"
-    "   vCol = vec4(clamp(aPos, 0.f, 1.f), 1.f);\n"
-    "}\0";
-
-    unsigned int vertexShader;
-    vertexShader = glCreateShader(GL_VERTEX_SHADER);
-
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
-
-    int  success;
-    char infoLog[512];
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-
-    if(!success)
-    {
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-
-    const char* fragmentShaderSource = "#version 330 core\n"
-    "in vec4 vCol;\n"
-    "out vec4 FragColor;\n"
-    "void main()\n"
-    "{\n"
-    "   FragColor = vCol;\n"
-    "}\n\0";
+    std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
+    std::cout << "GLSL Version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+    std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
 
 
-
-    unsigned int fragmentShader;
-    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
-
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-
-    if(!success)
-    {
-        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-
-    //unsigned int shaderProgram;
-    shaderProgram = glCreateProgram();
-
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-
-    uniformModel = glGetUniformLocation(shaderProgram, "model");
-    uniformProjection = glGetUniformLocation(shaderProgram, "projection");
+    mesh = std::make_shared<Mesh>(vertices, indices);
+    shader = std::make_shared<Shader>(  SRC_PATH "shaders/vertexShader.glsl",
+        SRC_PATH "shaders/fragmentShader.glsl");
 
     float ar = static_cast<float>(m_width) / static_cast<float>(m_height);
     projectionMatrix = glm::perspective(glm::radians(45.0f), ar, 0.1f, 100.0f);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
 }
 
 void WindowManager::updateWindow()
@@ -161,7 +100,7 @@ void WindowManager::updateWindow()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glUseProgram(shaderProgram);
+        shader->use();
 
 
         glm::mat4 model = glm::mat4(1.f);
@@ -171,8 +110,8 @@ void WindowManager::updateWindow()
         model = glm::scale(model, glm::vec3(0.4f, 0.4f, 1.f));
 
 
-        glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-        glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
+        shader->setMat4("model", model);
+        shader->setMat4("projection", projectionMatrix);
 
 
         const Uint8* state = SDL_GetKeyboardState(NULL);
@@ -187,7 +126,7 @@ void WindowManager::updateWindow()
             triOffsetX -= 0.03f;
         }
 
-        glDrawElements(GL_TRIANGLES, 12 ,GL_UNSIGNED_INT, 0);
+        mesh->render();
 
         SDL_GL_SwapWindow(m_window);
 
@@ -200,7 +139,8 @@ void WindowManager::updateWindow()
 
 void WindowManager::cleanUp()
 {
-    glDeleteShader(shaderProgram);
+    mesh->cleanup();
+    //glDeleteShader(shader->ID);
     SDL_GL_DeleteContext(m_context);
     SDL_DestroyWindow(m_window);
     SDL_Quit();

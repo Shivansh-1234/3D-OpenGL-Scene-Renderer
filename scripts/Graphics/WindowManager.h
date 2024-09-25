@@ -11,6 +11,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "Mesh.h"
+#include "Shader.h"
+
 
 class WindowManager {
 
@@ -50,6 +53,8 @@ private:
     WindowManager(const WindowManager&) = delete;
     WindowManager& operator=(const WindowManager&) = delete;
 
+    void initStuff();
+
     SDL_Window* m_window = nullptr;
     SDL_GLContext m_context = nullptr;
     const GLint m_width = 1920;
@@ -64,6 +69,8 @@ private:
     float curlAngle = 0.f;
     glm::mat4 projectionMatrix = glm::mat4(1.f);
 
+    std::shared_ptr<Mesh> mesh;
+    std::shared_ptr<Shader> shader;
 };
 
 

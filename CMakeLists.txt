@@ -3,9 +3,6 @@ project(LIFE)
 
 set(CMAKE_CXX_STANDARD 14)
 
-# Set output directories for build files
-#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-
 # Add source files (adjust paths if needed)
 add_executable(${PROJECT_NAME}
         scripts/main.cpp
@@ -15,6 +12,10 @@ add_executable(${PROJECT_NAME}
         scripts/Graphics/WindowManager.h
         scripts/GlobalVariables.h
         scripts/DEPENDENCIES.h
+        scripts/Graphics/Mesh.cpp
+        scripts/Graphics/Mesh.h
+        scripts/Graphics/Shader.cpp
+        scripts/Graphics/Shader.h
 )
 
 # --- PLATFORM DETECTION ---
@@ -38,6 +39,14 @@ elseif(UNIX)
     target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES})
 
 endif()
+
+# --- RESOURCE_PATH Setup ---
+set(RESOURCE_PATH "${CMAKE_SOURCE_DIR}/resources/")
+add_definitions(-DRESOURCE_PATH=\"${RESOURCE_PATH}\")
+
+# --- SRC_PATH Setup ---
+set(SRC_PATH "${CMAKE_SOURCE_DIR}/scripts/")
+add_definitions(-DSRC_PATH=\"${SRC_PATH}\")
 
 # --- Glad Setup (Cross-Platform) ---
 add_subdirectory(third_party/glad)
