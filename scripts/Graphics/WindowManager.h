@@ -58,7 +58,11 @@ private:
 
     unsigned int  shaderProgram;
     unsigned int uniformModel;
+    unsigned int uniformProjection;
     float triOffsetX = 0.f;
+    const float toRadians = 3.14159265f / 180.f;
+    float curlAngle = 0.f;
+    glm::mat4 projectionMatrix = glm::mat4(1.f);
 
 };
 
