@@ -1,25 +1,26 @@
-//
-// Created by karti on 26-05-2024.
-//
-
 #include "WindowManager.h"
 
 #include <glad/glad.h>
 
 void WindowManager::initStuff() {
+    input = std::make_shared<Input>();
 }
 
-
-
-void pollEvents(SDL_Event& event, bool& isRunning) {
+void WindowManager::pollEvents(SDL_Event& event, bool& isRunning) {
     while(SDL_PollEvent(&event)) {
+        input->handleEvent(event);
+
         switch(event.type) {
         case SDL_QUIT:
             isRunning = false;
             break;
         case SDL_KEYDOWN:
             if(event.key.keysym.sym == SDLK_ESCAPE)
-                isRunning = false;
+                if(!SDL_GetRelativeMouseMode()) {
+                    isRunning = false;
+                } else {
+                    SDL_SetRelativeMouseMode(SDL_FALSE);
+                }
             break;
         }
     }
@@ -55,6 +56,8 @@ void WindowManager::createWindow(const std::string& title, const GLint width, co
         exit(-1);
     }
 
+    SDL_SetRelativeMouseMode(SDL_TRUE);
+
     initStuff();
 
 
@@ -68,6 +71,13 @@ void WindowManager::createWindow(const std::string& title, const GLint width, co
         {glm::vec3(-1.f, -1.f, 0.f)},
         {glm::vec3(0.f, -1.f, 1.f)},
         {glm::vec3(1.f, -1.f, 0.f)},
+        {glm::vec3(0.f, 1.f, 0.f)}
+    };
+
+    std::vector<Vertex> vertices2 = {
+        {glm::vec3(-11.f, -1.f, 0.f)},
+        {glm::vec3(0.f, -1.f, 1.f)},
+        {glm::vec3(11.f, -1.f, 0.f)},
         {glm::vec3(0.f, 1.f, 0.f)}
     };
 
@@ -95,7 +105,10 @@ void WindowManager::updateWindow()
 {
     SDL_Event event;
     while(m_isRunning) {
+
+        input->update();
         pollEvents(event, m_isRunning);
+
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -128,9 +141,12 @@ void WindowManager::updateWindow()
 
         mesh->render();
 
+        int mouseX, mouseY;
+        input->getMousePosCentered(mouseX, mouseY, m_width, m_height);
+        std::cout << "Mouse Position: (" << mouseX << ", " << mouseY << ")" << std::endl;
+
         SDL_GL_SwapWindow(m_window);
 
-        std::cout << triOffsetX << std::endl;
 
         curlAngle += 0.4f;
 

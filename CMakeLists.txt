@@ -16,6 +16,8 @@ add_executable(${PROJECT_NAME}
         scripts/Graphics/Mesh.h
         scripts/Graphics/Shader.cpp
         scripts/Graphics/Shader.h
+        scripts/core/Input.cpp
+        scripts/core/Input.h
 )
 
 # --- PLATFORM DETECTION ---

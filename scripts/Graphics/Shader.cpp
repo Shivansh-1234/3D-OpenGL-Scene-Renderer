@@ -16,7 +16,6 @@ Shader::Shader(const std::string &vertexPath, const std::string &fragmentPath) {
     GLuint vertexShader, fragmentShader;
 
     vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    std::cout << vertexShaderCode;
     glShaderSource(vertexShader, 1 , &vertexShaderCode, NULL);
     glCompileShader(vertexShader);
     checkShaderCompileError(vertexShader, "VERTEX");

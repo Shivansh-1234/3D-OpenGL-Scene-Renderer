@@ -13,6 +13,7 @@
 
 #include "Mesh.h"
 #include "Shader.h"
+#include "../core/Input.h"
 
 
 class WindowManager {
@@ -53,6 +54,7 @@ private:
     WindowManager(const WindowManager&) = delete;
     WindowManager& operator=(const WindowManager&) = delete;
 
+    void pollEvents(SDL_Event& event, bool& isRunning);
     void initStuff();
 
     SDL_Window* m_window = nullptr;
@@ -70,7 +72,9 @@ private:
     glm::mat4 projectionMatrix = glm::mat4(1.f);
 
     std::shared_ptr<Mesh> mesh;
+    std::shared_ptr<Mesh> mesh2;
     std::shared_ptr<Shader> shader;
+    std::shared_ptr<Input> input;
 };
 
 
