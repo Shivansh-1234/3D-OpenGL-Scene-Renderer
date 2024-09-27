@@ -11,10 +11,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "Camera.h"
 #include "Mesh.h"
 #include "Shader.h"
 #include "../core/Input.h"
-
 
 class WindowManager {
 
@@ -49,19 +49,22 @@ public:
     }
 
 private:
-    WindowManager() : m_width(1920), m_height(1080), m_window(nullptr), m_context(nullptr) {}
+    WindowManager() : m_width(2560), m_height(1440), m_window(nullptr), m_context(nullptr) {}
     ~WindowManager() = default;
     WindowManager(const WindowManager&) = delete;
     WindowManager& operator=(const WindowManager&) = delete;
 
     void pollEvents(SDL_Event& event, bool& isRunning);
     void initStuff();
+    void processCameraInput();
 
     SDL_Window* m_window = nullptr;
     SDL_GLContext m_context = nullptr;
-    const GLint m_width = 1920;
-    const GLint m_height = 1080;
+    const GLint m_width = 2560;
+    const GLint m_height = 1440;
     bool m_isRunning = true;
+    float deltaTime = 0.f;
+    float lastFrame = 0.f;
 
     unsigned int  shaderProgram;
     unsigned int uniformModel;
@@ -69,12 +72,15 @@ private:
     float triOffsetX = 0.f;
     const float toRadians = 3.14159265f / 180.f;
     float curlAngle = 0.f;
+    float ar;
     glm::mat4 projectionMatrix = glm::mat4(1.f);
+    glm::mat4 viewMatrix = glm::mat4(1.f);
 
     std::shared_ptr<Mesh> mesh;
     std::shared_ptr<Mesh> mesh2;
     std::shared_ptr<Shader> shader;
     std::shared_ptr<Input> input;
+    std::shared_ptr<Camera> camera;
 };
 
 

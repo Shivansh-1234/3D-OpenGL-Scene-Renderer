@@ -1,9 +1,28 @@
 #include "WindowManager.h"
-
 #include <glad/glad.h>
 
+void clampMouseToWindow(SDL_Window* window, SDL_Event* event) {
+    int winWidth, winHeight;
+    SDL_GetWindowSize(window, &winWidth, &winHeight);
+
+    int x = event->motion.x;
+    int y = event->motion.y;
+
+    // Clamp the cursor within the window bounds
+    if (x < 0) x = 0;
+    if (x > winWidth) x = winWidth;
+    if (y < 0) y = 0;
+    if (y > winHeight) y = winHeight;
+
+    // Warp the cursor if it's outside the window
+    SDL_WarpMouseInWindow(window, x, y);
+}
+
 void WindowManager::initStuff() {
+    ar = static_cast<float>(m_width) / static_cast<float>(m_height);
+
     input = std::make_shared<Input>();
+    camera = std::make_shared<Camera>();
 }
 
 void WindowManager::pollEvents(SDL_Event& event, bool& isRunning) {
@@ -22,9 +41,31 @@ void WindowManager::pollEvents(SDL_Event& event, bool& isRunning) {
                     SDL_SetRelativeMouseMode(SDL_FALSE);
                 }
             break;
+            case SDL_MOUSEMOTION:
+                clampMouseToWindow(m_window, &event);
+                camera->mouse_callback(static_cast<float> (event.motion.x), static_cast<float> (event.motion.y));
+                break;
+            case SDL_MOUSEWHEEL:
+                camera->scroll_callback(static_cast<float> (event.wheel.y));
         }
     }
 }
+
+void WindowManager::processCameraInput() {
+    if(input->isKeyPressed(SDL_SCANCODE_W)) {
+        camera->processKeyboardInputs(CAMERA_MOVEMENT::FORWARD, deltaTime);
+    }
+    if(input->isKeyPressed(SDL_SCANCODE_S)) {
+        camera->processKeyboardInputs(CAMERA_MOVEMENT::BACKWARD, deltaTime);
+    }
+    if(input->isKeyPressed(SDL_SCANCODE_A)) {
+        camera->processKeyboardInputs(CAMERA_MOVEMENT::LEFT, deltaTime);
+    }
+    if(input->isKeyPressed(SDL_SCANCODE_D)) {
+        camera->processKeyboardInputs(CAMERA_MOVEMENT::RIGHT, deltaTime);
+    }
+}
+
 
 void WindowManager::createWindow(const std::string& title, const GLint width, const GLint height) {
     if(SDL_Init(SDL_INIT_VIDEO) != 0){
@@ -36,7 +77,7 @@ void WindowManager::createWindow(const std::string& title, const GLint width, co
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 4);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 1);
 
-    m_window = SDL_CreateWindow(title.c_str(),SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,m_width,m_height,SDL_WINDOW_OPENGL);
+    m_window = SDL_CreateWindow(title.c_str(),SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,m_width,m_height,SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN);
 
     if(m_window == nullptr){
         std::cout << "Failed to create window : " << SDL_GetError() << std::endl;
@@ -74,12 +115,6 @@ void WindowManager::createWindow(const std::string& title, const GLint width, co
         {glm::vec3(0.f, 1.f, 0.f)}
     };
 
-    std::vector<Vertex> vertices2 = {
-        {glm::vec3(-11.f, -1.f, 0.f)},
-        {glm::vec3(0.f, -1.f, 1.f)},
-        {glm::vec3(11.f, -1.f, 0.f)},
-        {glm::vec3(0.f, 1.f, 0.f)}
-    };
 
     std::vector<GLuint> indices = {
         0, 3, 1,
@@ -97,8 +132,6 @@ void WindowManager::createWindow(const std::string& title, const GLint width, co
     shader = std::make_shared<Shader>(  SRC_PATH "shaders/vertexShader.glsl",
         SRC_PATH "shaders/fragmentShader.glsl");
 
-    float ar = static_cast<float>(m_width) / static_cast<float>(m_height);
-    projectionMatrix = glm::perspective(glm::radians(45.0f), ar, 0.1f, 100.0f);
 }
 
 void WindowManager::updateWindow()
@@ -106,7 +139,16 @@ void WindowManager::updateWindow()
     SDL_Event event;
     while(m_isRunning) {
 
+        float currentFrame = SDL_GetTicks() / 1000.f;
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
+
         input->update();
+
+        processCameraInput();
+
+
         pollEvents(event, m_isRunning);
 
 
@@ -118,32 +160,22 @@ void WindowManager::updateWindow()
 
         glm::mat4 model = glm::mat4(1.f);
         model = glm::translate(model, glm::vec3(0.f, triOffsetX, -2.5f));
-
-        model = glm::rotate(model, curlAngle * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+        //model = glm::rotate(model, curlAngle * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
         model = glm::scale(model, glm::vec3(0.4f, 0.4f, 1.f));
 
+        projectionMatrix = glm::perspective(glm::radians(camera->zoom), ar, 0.1f, 100.0f);
 
-        shader->setMat4("model", model);
+
+        viewMatrix = camera->getViewMatrix();
+
+
         shader->setMat4("projection", projectionMatrix);
+        shader->setMat4("view", viewMatrix);
+        shader->setMat4("model", model);
 
-
-        const Uint8* state = SDL_GetKeyboardState(NULL);
-
-        if(state[SDL_SCANCODE_D])
-        {
-            triOffsetX += 0.03f;
-        }
-
-        if(state[SDL_SCANCODE_A])
-        {
-            triOffsetX -= 0.03f;
-        }
 
         mesh->render();
 
-        int mouseX, mouseY;
-        input->getMousePosCentered(mouseX, mouseY, m_width, m_height);
-        std::cout << "Mouse Position: (" << mouseX << ", " << mouseY << ")" << std::endl;
 
         SDL_GL_SwapWindow(m_window);
 
@@ -161,5 +193,6 @@ void WindowManager::cleanUp()
     SDL_DestroyWindow(m_window);
     SDL_Quit();
 }
+
 
 
