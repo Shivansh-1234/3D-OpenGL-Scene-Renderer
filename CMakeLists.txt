@@ -20,6 +20,8 @@ add_executable(${PROJECT_NAME}
         scripts/core/Input.h
         scripts/Graphics/Camera.cpp
         scripts/Graphics/Camera.h
+        scripts/Graphics/Texture.cpp
+        scripts/Graphics/Texture.h
 )
 
 # --- PLATFORM DETECTION ---
@@ -28,10 +30,17 @@ if(WIN32)
 
     # --- SDL2 Setup for Windows ---
     set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)
-    set(SDL2_PATH "SDL2/x86_64-w64-mingw32")  # Adjust path if necessary
+    set(SDL2_PATH "SDL2/x86_64-w64-mingw32")
+    set(SDL2_IMAGE_PATH "third_party/sdl_image/x86_64-w64-mingw32")
 
     find_package(SDL2 REQUIRED)
     include_directories(${SDL2_INCLUDE_DIR})
+
+    # Find SDL2_image
+    find_package(SDL2_image REQUIRED)
+    include_directories(${SDL2_IMAGE_INCLUDE_DIR})
+
+    # Link SDL2 and SDL2_image
     target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARY} ${SDL2_IMAGE_LIBRARIES})
 
 elseif(UNIX)
@@ -40,7 +49,13 @@ elseif(UNIX)
     # --- SDL2 Setup for Linux ---
     find_package(SDL2 REQUIRED)
     include_directories(${SDL2_INCLUDE_DIRS})
-    target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES})
+
+    # Find SDL2_image
+    find_package(SDL2_image REQUIRED)
+    include_directories(${SDL2_IMAGE_INCLUDE_DIRS})
+
+    # Link SDL2 and SDL2_image
+    target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES})
 
 endif()
 

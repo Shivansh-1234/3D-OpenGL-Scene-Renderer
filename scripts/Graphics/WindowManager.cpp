@@ -98,6 +98,7 @@ void WindowManager::createWindow(const std::string& title, const GLint width, co
     }
 
     SDL_SetRelativeMouseMode(SDL_TRUE);
+    SDL_GL_SetSwapInterval(1);
 
     initStuff();
 
@@ -105,6 +106,27 @@ void WindowManager::createWindow(const std::string& title, const GLint width, co
     glEnable(GL_DEPTH_TEST);
 
     glViewport(0, 0, m_width, m_height);
+
+    // Get SDL version
+    SDL_version compiled;
+    SDL_version linked;
+
+    // Version when SDL was compiled
+    SDL_VERSION(&compiled);
+
+    // Version of the SDL library linked at runtime
+    SDL_GetVersion(&linked);
+
+    // Output the version
+    std::cout << "Compiled against SDL version: "
+              << static_cast<int>(compiled.major) << "."
+              << static_cast<int>(compiled.minor) << "."
+              << static_cast<int>(compiled.patch) << std::endl;
+
+    std::cout << "Linked SDL version: "
+              << static_cast<int>(linked.major) << "."
+              << static_cast<int>(linked.minor) << "."
+              << static_cast<int>(linked.patch) << std::endl;
 
 
 
@@ -143,6 +165,7 @@ void WindowManager::updateWindow()
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
+        //std::cout << deltaTime << std::endl;
 
         input->update();
 
@@ -178,7 +201,6 @@ void WindowManager::updateWindow()
 
 
         SDL_GL_SwapWindow(m_window);
-
 
         curlAngle += 0.4f;
 

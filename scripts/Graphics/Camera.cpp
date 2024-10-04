@@ -1,6 +1,7 @@
 #include "Camera.h"
 
 #include <cmath>
+#include <iostream>
 
 Camera::Camera()
     :   worldUp(up){
@@ -53,6 +54,7 @@ void Camera::processMouseInputs(float offSetX, float offSetY, GLboolean constrai
     }
 
     updateCameraVec();
+
 }
 
 void Camera::processMouseScroll(float offsetY) {
@@ -76,6 +78,10 @@ void Camera::updateCameraVec() {
 
     right = glm::normalize(glm::cross(front, worldUp));
     up = glm::normalize(glm::cross(right, front));
+
+    //std::cout << movementSpeed << std::endl;
+
+   // std::cout << " X : " << tempFront.x << " , Y : " << tempFront.y << " , Z : " << tempFront.z << std::endl;
 }
 
 void Camera::mouse_callback(float xpos, float ypos)  {
