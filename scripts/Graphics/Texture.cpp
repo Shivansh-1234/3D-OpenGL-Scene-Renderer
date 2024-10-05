@@ -1,6 +1,6 @@
 #include "Texture.h"
 #include <iostream>
-#include <SDL_image.h>
+#include "SDL_image.h"
 
 
 Texture::Texture(const std::string &path)
