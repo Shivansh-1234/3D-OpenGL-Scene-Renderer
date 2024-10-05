@@ -1,7 +1,7 @@
 #ifndef INPUT_H
 #define INPUT_H
 
-#include "SDL.h"
+#include "SDL2/SDL_image.h"
 #include <unordered_map>
 
 class Input {

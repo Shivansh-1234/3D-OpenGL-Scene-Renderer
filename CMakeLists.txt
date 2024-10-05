@@ -55,7 +55,7 @@ elseif(UNIX)
     include_directories(${SDL2_IMAGE_INCLUDE_DIRS})
 
     # Link SDL2 and SDL2_image
-    target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES})
+    target_link_libraries(${PROJECT_NAME} SDL2::SDL2 SDL2_image::SDL2_image)
 
 endif()
 

@@ -1,7 +1,3 @@
-//
-// Created by karti on 26-05-2024.
-//
-
 #ifndef WINDOWMANAGER_H
 #define WINDOWMANAGER_H
 
@@ -14,6 +10,7 @@
 #include "Camera.h"
 #include "Mesh.h"
 #include "Shader.h"
+#include "Texture.h"
 #include "../core/Input.h"
 
 class WindowManager {
@@ -81,6 +78,7 @@ private:
     std::shared_ptr<Shader> shader;
     std::shared_ptr<Input> input;
     std::shared_ptr<Camera> camera;
+    std::shared_ptr<Texture> texture;
 };
 
 

@@ -23,6 +23,7 @@ void WindowManager::initStuff() {
 
     input = std::make_shared<Input>();
     camera = std::make_shared<Camera>();
+    texture = std::make_shared<Texture>(RESOURCE_PATH "textures/brick.png");
 }
 
 void WindowManager::pollEvents(SDL_Event& event, bool& isRunning) {
@@ -131,10 +132,11 @@ void WindowManager::createWindow(const std::string& title, const GLint width, co
 
 
     std::vector<Vertex> vertices = {
-        {glm::vec3(-1.f, -1.f, 0.f)},
-        {glm::vec3(0.f, -1.f, 1.f)},
-        {glm::vec3(1.f, -1.f, 0.f)},
-        {glm::vec3(0.f, 1.f, 0.f)}
+        //position                                              //texCoords
+        {glm::vec3(-1.f, -1.f, 0.f)     ,       glm::vec2(0.f ,0.f)},
+        {glm::vec3(0.f, -1.f, 1.f)      ,       glm::vec2(0.5f, 0.f)},
+        {glm::vec3(1.f, -1.f, 0.f)      ,       glm::vec2(1.f, 0.f)},
+        {glm::vec3(0.f, 1.f, 0.f)       ,       glm::vec2(0.5f, 1.f)}
     };
 
 
@@ -178,6 +180,8 @@ void WindowManager::updateWindow()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        texture->bind(0);
+
         shader->use();
 
 
@@ -199,6 +203,7 @@ void WindowManager::updateWindow()
 
         mesh->render();
 
+        texture->unbind();
 
         SDL_GL_SwapWindow(m_window);
 
