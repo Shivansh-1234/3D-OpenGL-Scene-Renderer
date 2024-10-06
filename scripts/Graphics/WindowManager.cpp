@@ -24,7 +24,9 @@ void WindowManager::initStuff() {
     input = std::make_shared<Input>();
     camera = std::make_shared<Camera>();
     texture = std::make_shared<Texture>(RESOURCE_PATH "textures/brick.png");
-    ambientLight = std::make_shared<AmbientLight>(glm::vec3(0.5f, 0.5f, 0.5f), 0.3f);
+    ambientLight = std::make_shared<AmbientLight>(glm::vec3(0.5f, 0.5f, 0.5f), 0.5f);
+    diffuseLight = std::make_shared<DiffuseLight>(glm::vec3(1.0f, 1.0f, 1.0f),
+        0.8f, glm::vec3(0.0f, -1.0f, 0.0f));
 }
 
 void WindowManager::pollEvents(SDL_Event& event, bool& isRunning) {
@@ -133,11 +135,11 @@ void WindowManager::createWindow(const std::string& title, const GLint width, co
 
 
     std::vector<Vertex> vertices = {
-        //position                                              //texCoords
-        {glm::vec3(-1.f, -1.f, 0.f)     ,       glm::vec2(0.f ,0.f)},
-        {glm::vec3(0.f, -1.f, 1.f)      ,       glm::vec2(0.5f, 0.f)},
-        {glm::vec3(1.f, -1.f, 0.f)      ,       glm::vec2(1.f, 0.f)},
-        {glm::vec3(0.f, 1.f, 0.f)       ,       glm::vec2(0.5f, 1.f)}
+        //position                                              //texCoords                                 //normals
+        {glm::vec3(-1.f, -1.f, 0.f)     ,       glm::vec2(0.f ,0.f)     ,       glm::vec3(-0.66666667f,  0.33333333f,  0.66666667f)},
+        {glm::vec3(0.f, -1.f, 1.f)      ,       glm::vec2(0.5f, 0.f)    ,       glm::vec3(0.66666667f, 0.33333333f, 0.66666667f)},
+        {glm::vec3(1.f, -1.f, 0.f)      ,       glm::vec2(1.f, 0.f)     ,       glm::vec3(0.f,  0.f, -1.f)},
+        {glm::vec3(0.f, 1.f, 0.f)       ,       glm::vec2(0.5f, 1.f)    ,       glm::vec3(0.f, -1.f,  0.f)}
     };
 
 
@@ -202,6 +204,8 @@ void WindowManager::updateWindow()
         shader->setMat4("model", model);
 
         ambientLight->useLight(shader, "ambientLight.color", "ambientLight.intensity");
+        diffuseLight->useLight(shader, "diffuseLight.color", "diffuseLight.intensity",
+            "diffuseLight.direction");
 
         mesh->render();
 
