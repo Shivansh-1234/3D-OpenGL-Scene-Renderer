@@ -24,6 +24,7 @@ void WindowManager::initStuff() {
     input = std::make_shared<Input>();
     camera = std::make_shared<Camera>();
     texture = std::make_shared<Texture>(RESOURCE_PATH "textures/brick.png");
+    ambientLight = std::make_shared<AmbientLight>(glm::vec3(0.5f, 0.5f, 0.5f), 0.3f);
 }
 
 void WindowManager::pollEvents(SDL_Event& event, bool& isRunning) {
@@ -200,6 +201,7 @@ void WindowManager::updateWindow()
         shader->setMat4("view", viewMatrix);
         shader->setMat4("model", model);
 
+        ambientLight->useLight(shader, "ambientLight.color", "ambientLight.intensity");
 
         mesh->render();
 

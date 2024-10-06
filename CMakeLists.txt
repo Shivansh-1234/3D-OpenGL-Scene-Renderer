@@ -22,6 +22,10 @@ add_executable(${PROJECT_NAME}
         scripts/Graphics/Camera.h
         scripts/Graphics/Texture.cpp
         scripts/Graphics/Texture.h
+        scripts/Graphics/Lighting/Light.cpp
+        scripts/Graphics/Lighting/Light.h
+        scripts/Graphics/Lighting/AmbientLight.cpp
+        scripts/Graphics/Lighting/AmbientLight.h
 )
 
 # --- PLATFORM DETECTION ---

@@ -12,6 +12,7 @@
 #include "Shader.h"
 #include "Texture.h"
 #include "../core/Input.h"
+#include "Lighting/AmbientLight.h"
 
 class WindowManager {
 
@@ -79,6 +80,7 @@ private:
     std::shared_ptr<Input> input;
     std::shared_ptr<Camera> camera;
     std::shared_ptr<Texture> texture;
+    std::shared_ptr<AmbientLight> ambientLight;
 };
 
 
