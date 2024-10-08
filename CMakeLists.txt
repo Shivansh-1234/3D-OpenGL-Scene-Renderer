@@ -28,6 +28,8 @@ add_executable(${PROJECT_NAME}
         scripts/Graphics/Lighting/AmbientLight.h
         scripts/Graphics/Lighting/DiffuseLight.cpp
         scripts/Graphics/Lighting/DiffuseLight.h
+        scripts/Graphics/Lighting/SpecularLight.cpp
+        scripts/Graphics/Lighting/SpecularLight.h
 )
 
 # --- PLATFORM DETECTION ---

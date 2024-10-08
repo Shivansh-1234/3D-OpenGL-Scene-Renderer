@@ -14,6 +14,7 @@
 #include "../core/Input.h"
 #include "Lighting/AmbientLight.h"
 #include "Lighting/DiffuseLight.h"
+#include "Lighting/SpecularLight.h"
 
 class WindowManager {
 
@@ -83,6 +84,7 @@ private:
     std::shared_ptr<Texture> texture;
     std::shared_ptr<AmbientLight> ambientLight;
     std::shared_ptr<DiffuseLight> diffuseLight;
+    std::shared_ptr<SpecularLight> specularLight;
 };
 
 

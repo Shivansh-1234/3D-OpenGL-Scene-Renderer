@@ -27,6 +27,8 @@ void WindowManager::initStuff() {
     ambientLight = std::make_shared<AmbientLight>(glm::vec3(0.5f, 0.5f, 0.5f), 0.5f);
     diffuseLight = std::make_shared<DiffuseLight>(glm::vec3(1.0f, 1.0f, 1.0f),
         0.8f, glm::vec3(0.0f, -1.0f, 0.0f));
+    specularLight = std::make_shared<SpecularLight>(glm::vec3(1.0f, 1.0f, 1.0f), 1.0f,
+        glm::vec3(0.0f, -1.0f, 0.0f) , 32.f);
 }
 
 void WindowManager::pollEvents(SDL_Event& event, bool& isRunning) {
@@ -81,7 +83,8 @@ void WindowManager::createWindow(const std::string& title, const GLint width, co
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 4);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 1);
 
-    m_window = SDL_CreateWindow(title.c_str(),SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,m_width,m_height,SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN);
+    m_window = SDL_CreateWindow(title.c_str(),SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,m_width,m_height,
+        SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN);
 
     if(m_window == nullptr){
         std::cout << "Failed to create window : " << SDL_GetError() << std::endl;
@@ -135,7 +138,7 @@ void WindowManager::createWindow(const std::string& title, const GLint width, co
 
 
     std::vector<Vertex> vertices = {
-        //position                                              //texCoords                                 //normals
+        //position                                                      //texCoords                               //normals
         {glm::vec3(-1.f, -1.f, 0.f)     ,       glm::vec2(0.f ,0.f)     ,       glm::vec3(-0.66666667f,  0.33333333f,  0.66666667f)},
         {glm::vec3(0.f, -1.f, 1.f)      ,       glm::vec2(0.5f, 0.f)    ,       glm::vec3(0.66666667f, 0.33333333f, 0.66666667f)},
         {glm::vec3(1.f, -1.f, 0.f)      ,       glm::vec2(1.f, 0.f)     ,       glm::vec3(0.f,  0.f, -1.f)},
@@ -202,10 +205,14 @@ void WindowManager::updateWindow()
         shader->setMat4("projection", projectionMatrix);
         shader->setMat4("view", viewMatrix);
         shader->setMat4("model", model);
+        shader->setVec3("viewPos", camera->position);
+        shader->setVec3("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
 
         ambientLight->useLight(shader, "ambientLight.color", "ambientLight.intensity");
         diffuseLight->useLight(shader, "diffuseLight.color", "diffuseLight.intensity",
             "diffuseLight.direction");
+        specularLight->useLight(shader, "specularLight.color", "specularLight.intensity",
+            "specularLight.direction", "material.shininess");
 
         mesh->render();
 
