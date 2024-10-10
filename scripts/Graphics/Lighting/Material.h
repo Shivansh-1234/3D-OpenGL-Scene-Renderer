@@ -1,0 +1,27 @@
+#ifndef MATERIAL_H
+#define MATERIAL_H
+
+#include <string>
+#include <glm/glm.hpp>
+
+class Shader;
+
+class Material {
+public:
+    Material(const glm::vec3& specular, float shininess);
+
+    void setUniforms(Shader& shader, const std::string& uniformName);
+
+    glm::vec3 getSpecularIntensity() const;
+    void setSpecularIntensity(const glm::vec3 &specular_intensity);
+    float getShininess() const;
+    void setShininess(float shininess);
+
+private:
+    glm::vec3 specularIntensity;
+    float shininess;
+};
+
+
+
+#endif //MATERIAL_H

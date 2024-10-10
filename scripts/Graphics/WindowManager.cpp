@@ -208,7 +208,7 @@ void WindowManager::updateWindow()
         shader->setVec3("viewPos", camera->position);
         shader->setVec3("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
 
-        ambientLight->useLight(shader, "ambientLight.color", "ambientLight.intensity");
+        ambientLight->useLight(shader, "directionalLight.color", "directionalLight.intensity");
         diffuseLight->useLight(shader, "diffuseLight.color", "diffuseLight.intensity",
             "diffuseLight.direction");
         specularLight->useLight(shader, "specularLight.color", "specularLight.intensity",
