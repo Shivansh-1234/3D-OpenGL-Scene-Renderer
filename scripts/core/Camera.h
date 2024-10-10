@@ -1,9 +1,9 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include <glad/glad.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include <../../third_party/glad/include/glad/glad.h>
+#include <../../third_party/glm/glm/glm.hpp>
+#include <../../third_party/glm/glm/gtc/matrix_transform.hpp>
 
 enum class CAMERA_MOVEMENT {
     FORWARD,

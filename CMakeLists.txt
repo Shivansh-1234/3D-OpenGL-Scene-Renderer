@@ -18,8 +18,8 @@ add_executable(${PROJECT_NAME}
         scripts/Graphics/Shader.h
         scripts/core/Input.cpp
         scripts/core/Input.h
-        scripts/Graphics/Camera.cpp
-        scripts/Graphics/Camera.h
+        scripts/core/Camera.cpp
+        scripts/core/Camera.h
         scripts/Graphics/Texture.cpp
         scripts/Graphics/Texture.h
         scripts/Graphics/Lighting/Light.cpp

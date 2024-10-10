@@ -8,7 +8,7 @@ public:
     DirectionalLight(const glm::vec3& color, const glm::vec3& direction,
         float ambientIntensity, float diffuseIntensity);
 
-    void setUniforms(Shader &shader, const std::string &uniformName) const override;
+    void setUniforms(const std::shared_ptr<Shader>& shader, const std::string &uniformName) const override;
 
     // g n s
     void setDirection(const glm::vec3 &direction);

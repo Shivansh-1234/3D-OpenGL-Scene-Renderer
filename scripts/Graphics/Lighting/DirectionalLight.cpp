@@ -9,10 +9,10 @@ DirectionalLight::DirectionalLight(const glm::vec3 &color, const glm::vec3 &dire
         diffuseIntensity(diffuseIntensity)  {
 }
 
-void DirectionalLight::setUniforms(Shader &shader, const std::string &uniformName) const {
+void DirectionalLight::setUniforms(const std::shared_ptr<Shader>& shader, const std::string &uniformName) const {
     Light::setUniforms(shader, uniformName);
-    shader.setVec3(uniformName + ".direction", direction);
-    shader.setFloat(uniformName + ".diffuseIntensity", diffuseIntensity);
+    shader->setVec3(uniformName + ".direction", direction);
+    shader->setFloat(uniformName + ".diffuseIntensity", diffuseIntensity);
 
 }
 

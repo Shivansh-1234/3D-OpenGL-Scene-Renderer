@@ -7,14 +7,13 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "Camera.h"
+#include "../core/Camera.h"
 #include "Mesh.h"
 #include "Shader.h"
 #include "Texture.h"
 #include "../core/Input.h"
-#include "Lighting/AmbientLight.h"
-#include "Lighting/DiffuseLight.h"
-#include "Lighting/SpecularLight.h"
+#include "Lighting/DirectionalLight.h"
+#include "Lighting/Material.h"
 
 class WindowManager {
 
@@ -82,9 +81,8 @@ private:
     std::shared_ptr<Input> input;
     std::shared_ptr<Camera> camera;
     std::shared_ptr<Texture> texture;
-    std::shared_ptr<AmbientLight> ambientLight;
-    std::shared_ptr<DiffuseLight> diffuseLight;
-    std::shared_ptr<SpecularLight> specularLight;
+    std::shared_ptr<DirectionalLight> directionalLight;
+    std::shared_ptr<Material> material;
 };
 
 

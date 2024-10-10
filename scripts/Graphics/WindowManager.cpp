@@ -24,11 +24,9 @@ void WindowManager::initStuff() {
     input = std::make_shared<Input>();
     camera = std::make_shared<Camera>();
     texture = std::make_shared<Texture>(RESOURCE_PATH "textures/brick.png");
-    ambientLight = std::make_shared<AmbientLight>(glm::vec3(0.5f, 0.5f, 0.5f), 0.5f);
-    diffuseLight = std::make_shared<DiffuseLight>(glm::vec3(1.0f, 1.0f, 1.0f),
-        0.8f, glm::vec3(0.0f, -1.0f, 0.0f));
-    specularLight = std::make_shared<SpecularLight>(glm::vec3(1.0f, 1.0f, 1.0f), 1.0f,
-        glm::vec3(0.0f, -1.0f, 0.0f) , 32.f);
+    directionalLight= std::make_shared<DirectionalLight>(glm::vec3(1.f, 1.f, 1.f), glm::vec3(-0.2f, -1.f, -0.3f),
+        0.2f, 0.8f);
+    material = std::make_shared<Material>(glm::vec3(1.f, 1.f, 1.f), 32.f);
 }
 
 void WindowManager::pollEvents(SDL_Event& event, bool& isRunning) {
@@ -206,13 +204,9 @@ void WindowManager::updateWindow()
         shader->setMat4("view", viewMatrix);
         shader->setMat4("model", model);
         shader->setVec3("viewPos", camera->position);
-        shader->setVec3("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
 
-        ambientLight->useLight(shader, "directionalLight.color", "directionalLight.intensity");
-        diffuseLight->useLight(shader, "diffuseLight.color", "diffuseLight.intensity",
-            "diffuseLight.direction");
-        specularLight->useLight(shader, "specularLight.color", "specularLight.intensity",
-            "specularLight.direction", "material.shininess");
+        directionalLight->setUniforms(shader, "directionalLight");
+        material->setUniforms(shader, "material");
 
         mesh->render();
 

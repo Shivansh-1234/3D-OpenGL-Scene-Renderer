@@ -5,9 +5,9 @@ Light::Light(const glm::vec3 &color, float intensity)
     : color(color), ambientIntensity(intensity) {
 }
 
-void Light::setUniforms(Shader &shader, const std::string &uniformName) const {
-    shader.setVec3(uniformName + ".color", color);
-    shader.setFloat(uniformName + ".ambientIntensity", ambientIntensity);
+void Light::setUniforms(const std::shared_ptr<Shader>& shader, const std::string &uniformName) const {
+    shader->setVec3(uniformName + ".color", color);
+    shader->setFloat(uniformName + ".ambientIntensity", ambientIntensity);
 }
 
 

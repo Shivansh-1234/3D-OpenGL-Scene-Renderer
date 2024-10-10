@@ -3,6 +3,7 @@
 
 #include <string>
 #include <glm/glm.hpp>
+#include <memory>
 
 class Shader;
 
@@ -10,7 +11,7 @@ class Light {
 public:
     Light(const glm::vec3& color, float intensity);
 
-    virtual void setUniforms(Shader& shader, const std::string& uniformName) const;
+    virtual void setUniforms(const std::shared_ptr<Shader>& shader, const std::string& uniformName) const;
 
     void setAmbientIntensity(float intensity);
     void setColor(const glm::vec3 &color);

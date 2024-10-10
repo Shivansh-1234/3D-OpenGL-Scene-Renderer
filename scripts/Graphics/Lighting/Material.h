@@ -3,6 +3,9 @@
 
 #include <string>
 #include <glm/glm.hpp>
+#include <memory>
+
+#include "../Shader.h"
 
 class Shader;
 
@@ -10,7 +13,7 @@ class Material {
 public:
     Material(const glm::vec3& specular, float shininess);
 
-    void setUniforms(Shader& shader, const std::string& uniformName);
+    void setUniforms(const std::shared_ptr<Shader>& shader, const std::string& uniformName);
 
     glm::vec3 getSpecularIntensity() const;
     void setSpecularIntensity(const glm::vec3 &specular_intensity);
