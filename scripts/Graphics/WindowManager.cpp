@@ -26,7 +26,7 @@ void WindowManager::initStuff() {
     texture = std::make_shared<Texture>(RESOURCE_PATH "textures/brick.png");
     directionalLight= std::make_shared<DirectionalLight>(glm::vec3(1.f, 1.f, 1.f), glm::vec3(-0.2f, -1.f, -0.3f),
         0.2f, 0.8f);
-    material = std::make_shared<Material>(glm::vec3(1.f, 1.f, 1.f), 32.f);
+    material = std::make_shared<Material>(glm::vec3(0.5f, 0.5f, 0.5f), 32.f);
 }
 
 void WindowManager::pollEvents(SDL_Event& event, bool& isRunning) {
@@ -150,6 +150,8 @@ void WindowManager::createWindow(const std::string& title, const GLint width, co
         2, 3, 0,
         0, 1, 2
     };
+
+    Mesh::calculateAvgNormals(vertices, indices);
 
     std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
     std::cout << "GLSL Version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;

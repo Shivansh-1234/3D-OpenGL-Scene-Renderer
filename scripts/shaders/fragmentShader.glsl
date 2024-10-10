@@ -33,7 +33,7 @@ void main()
 
     // Diffuse Light
     vec3 norm = normalize(Normal);
-    vec3 lightDir = normalize(-directionalLight.direction);  // Light direction is opposite to the direction of light source
+    vec3 lightDir = normalize(-directionalLight.direction - FragPos);  // Light direction is opposite to the direction of light source
     float diff = max(dot(norm, lightDir), 0.0);
     vec3 diffuse = directionalLight.diffuseIntensity * diff * directionalLight.color;
 

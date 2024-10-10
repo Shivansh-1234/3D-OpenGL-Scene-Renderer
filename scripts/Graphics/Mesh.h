@@ -19,6 +19,8 @@ public:
 
     Mesh(const std::vector<Vertex>& vertices, const std::vector<GLuint>& indices);
 
+    static void calculateAvgNormals(std::vector<Vertex>& vertices, const std::vector<GLuint>& indices);
+
     void render();
     void cleanup();
 
@@ -26,6 +28,7 @@ private:
     GLuint VBO, EBO;
 
     void setupMesh();
+    static glm::vec3 calculateFaceNormal(const Vertex& v0, const Vertex& v1, const Vertex& v2);
 };
 
 
