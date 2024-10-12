@@ -72,7 +72,7 @@ void main()
     // Spot Light Diffuse and Specular
     float spotDiff = max(dot(norm, spotLightDir), 0.0);
     vec3 spotDiffuse = intensity * spotLight.ambientIntensity * spotDiff * spotLight.color;
-    vec3 spotReflectDir = reflect(-spotLightDir, norm);
+    vec3 spotReflectDir = reflect(spotLightDir, norm);
     float spotSpec = pow(max(dot(viewDir, spotReflectDir), 0.0), material.shininess);
     vec3 spotSpecular = intensity * material.specularIntensity * spotSpec * spotLight.color;
 
