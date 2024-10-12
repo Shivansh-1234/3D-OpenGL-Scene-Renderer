@@ -81,7 +81,7 @@ void main()
     float pointDiff = max(dot(norm, pointLightDir), 0.0);
     vec3 pointDiffuse = pointLight.ambientIntensity * pointDiff * pointLight.color;
 
-    vec3 pointReflectDir = reflect(-pointLightDir, norm);
+    vec3 pointReflectDir = reflect(pointLightDir, norm);
     float pointSpec = pow(max(dot(viewDir, pointReflectDir), 0.0), material.shininess);
     vec3 pointSpecular = material.specularIntensity * pointSpec * pointLight.color;
 

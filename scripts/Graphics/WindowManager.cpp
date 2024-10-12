@@ -34,15 +34,15 @@ void WindowManager::initStuff() {
     material = std::make_shared<Material>(glm::vec3(0.5f, 0.5f, 0.5f), 32.f);
     pointLight = std::make_shared<PointLight>(
         glm::vec3(0.f, 0.f, 1.f),
+        0.5f,
+        glm::vec3(-4.f, -10.f, 0.f),
         1.f,
-        glm::vec3(0.f, 0.f, 0.f),
-        1.f,
-        0.7f,
-        1.8f
+        0.045f,
+        0.0075f
         );
     spotLight = std::make_shared<SpotLight>(
         glm::vec3(0.f, 1.f, 0.f),
-        1.f,
+        0.5f,
         camera->position,
         glm::normalize(camera->front),
         glm::cos(glm::radians(12.5f)),
