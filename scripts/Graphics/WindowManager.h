@@ -14,6 +14,8 @@
 #include "../core/Input.h"
 #include "Lighting/DirectionalLight.h"
 #include "Lighting/Material.h"
+#include "Lighting/PointLight.h"
+#include "Lighting/SpotLight.h"
 
 class WindowManager {
 
@@ -77,11 +79,15 @@ private:
 
     std::shared_ptr<Mesh> mesh;
     std::shared_ptr<Mesh> mesh2;
+    std::shared_ptr<Mesh> floorMesh;
     std::shared_ptr<Shader> shader;
     std::shared_ptr<Input> input;
     std::shared_ptr<Camera> camera;
-    std::shared_ptr<Texture> texture;
+    std::shared_ptr<Texture> brickTexture;
+    std::shared_ptr<Texture> floorTexture;
     std::shared_ptr<DirectionalLight> directionalLight;
+    std::shared_ptr<PointLight> pointLight;
+    std::shared_ptr<SpotLight> spotLight;
     std::shared_ptr<Material> material;
 };
 
