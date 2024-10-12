@@ -9,6 +9,8 @@ class Shader;
 
 class Light {
 public:
+    virtual ~Light() = default;
+
     Light(const glm::vec3& color, float intensity);
 
     virtual void setUniforms(const std::shared_ptr<Shader>& shader, const std::string& uniformName) const;

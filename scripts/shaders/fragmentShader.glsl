@@ -93,6 +93,6 @@ void main()
     pointSpecular *= attenuation;
 
 
-    vec3 result = ambient + diffuse + spotDiffuse + spotSpecular + pointDiffuse + pointSpecular;
+    vec3 result = ambient + diffuse + specular + spotDiffuse + spotSpecular + pointDiffuse + pointSpecular;
     FragColor = texture(brickTexture, TexCoords) * vec4(result, 1.0);
 }

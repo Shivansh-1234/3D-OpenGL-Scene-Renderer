@@ -28,6 +28,4 @@ private:
     float outerCutoff;
 };
 
-
-
 #endif //SPOTLIGHT_H
