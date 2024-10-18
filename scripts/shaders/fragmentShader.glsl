@@ -1,5 +1,7 @@
 #version 330 core
 
+#define NR_POINT_LIGHTS 1
+
 struct DirectionalLight {
     vec3 color;
     vec3 direction;
@@ -32,7 +34,7 @@ struct SpotLight {
 
 uniform DirectionalLight directionalLight;
 uniform Material material;
-uniform PointLight pointLight;
+uniform PointLight pointLight[NR_POINT_LIGHTS];
 uniform SpotLight spotLight;
 
 uniform vec3 viewPos;
@@ -46,53 +48,74 @@ out vec4 FragColor;
 
 uniform sampler2D brickTexture;
 
+vec3 calcDirectionalLight(DirectionalLight directionalLight, vec3 normal, vec3 viewDir);
+vec3 calcPointLight(PointLight pointLight, vec3 normal , vec3 viewDir, vec3 fragPos);
+vec3 calcSpotLight(SpotLight spotLight, vec3 normal , vec3 viewDir, vec3 fragPos);
+
 void main()
 {
+    vec3 norm = normalize(Normal);
+    vec3 viewDir = normalize(viewPos - FragPos);
+
+    vec3 result = calcDirectionalLight(directionalLight, norm, viewDir);
+    for(int i = 0; i < NR_POINT_LIGHTS; i++){
+        result += calcPointLight(pointLight[i], norm, viewDir, FragPos);
+    }
+    result += calcSpotLight(spotLight, norm, viewDir, FragPos);
+
+    FragColor = texture(brickTexture, TexCoords) * vec4(result, 1.0);
+}
+
+vec3 calcDirectionalLight(DirectionalLight directionalLight, vec3 normal, vec3 viewDir){
     // Ambient Light
     vec3 ambient = directionalLight.ambientIntensity * directionalLight.color;
 
     // Diffuse Light (Directional)
-    vec3 norm = normalize(Normal);
     vec3 lightDir = normalize(-directionalLight.direction);
-    float diff = max(dot(norm, lightDir), 0.0);
+    float diff = max(dot(normal, lightDir), 0.0);
     vec3 diffuse = directionalLight.diffuseIntensity * diff * directionalLight.color;
 
     // Specular Light (Directional)
-    vec3 viewDir = normalize(viewPos - FragPos);
-    vec3 reflectDir = reflect(-lightDir, norm);
+    vec3 reflectDir = reflect(-lightDir, normal);
     float specularFactor = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
     vec3 specular = material.specularIntensity * specularFactor * directionalLight.color;
 
-    // Spot Light Contribution
-    vec3 spotLightDir = normalize(spotLight.position - FragPos);
-    float theta = dot(spotLightDir, normalize(-spotLight.direction));
-    float epsilon = (spotLight.cutOff - spotLight.outerCutoff);
-    float intensity = clamp((theta - spotLight.outerCutoff) / epsilon, 0.0, 1.0);
+    return (ambient + diffuse + specular);
+}
 
-    // Spot Light Diffuse and Specular
-    float spotDiff = max(dot(norm, spotLightDir), 0.0);
-    vec3 spotDiffuse = intensity * spotLight.ambientIntensity * spotDiff * spotLight.color;
-    vec3 spotReflectDir = reflect(spotLightDir, norm);
-    float spotSpec = pow(max(dot(viewDir, spotReflectDir), 0.0), material.shininess);
-    vec3 spotSpecular = intensity * material.specularIntensity * spotSpec * spotLight.color;
-
+vec3 calcPointLight(PointLight pointLight, vec3 normal , vec3 viewDir, vec3 fragPos){
     // Point Light Contribution
-    vec3 pointLightDir = normalize(pointLight.position - FragPos);
-    float pointDiff = max(dot(norm, pointLightDir), 0.0);
+    vec3 pointLightDir = normalize(pointLight.position - fragPos);
+    float pointDiff = max(dot(normal, pointLightDir), 0.0);
     vec3 pointDiffuse = pointLight.ambientIntensity * pointDiff * pointLight.color;
 
-    vec3 pointReflectDir = reflect(pointLightDir, norm);
+    vec3 pointReflectDir = reflect(pointLightDir, normal);
     float pointSpec = pow(max(dot(viewDir, pointReflectDir), 0.0), material.shininess);
     vec3 pointSpecular = material.specularIntensity * pointSpec * pointLight.color;
 
     // Attenuation (Point Light)
-    float distance = length(pointLight.position - FragPos);
+    float distance = length(pointLight.position - fragPos);
     float attenuation = 1.0 / (pointLight.constant + pointLight.linear * distance +
     pointLight.quadratic * (distance * distance));
     pointDiffuse *= attenuation;
     pointSpecular *= attenuation;
 
+    return (pointDiffuse + pointSpecular);
+}
 
-    vec3 result = ambient + diffuse + specular + spotDiffuse + spotSpecular + pointDiffuse + pointSpecular;
-    FragColor = texture(brickTexture, TexCoords) * vec4(result, 1.0);
+vec3 calcSpotLight(SpotLight spotLight, vec3 normal , vec3 viewDir, vec3 fragPos){
+    // Spot Light Contribution
+    vec3 spotLightDir = normalize(spotLight.position - fragPos);
+    float theta = dot(spotLightDir, normalize(-spotLight.direction));
+    float epsilon = (spotLight.cutOff - spotLight.outerCutoff);
+    float intensity = clamp((theta - spotLight.outerCutoff) / epsilon, 0.0, 1.0);
+
+    // Spot Light Diffuse and Specular
+    float spotDiff = max(dot(normal, spotLightDir), 0.0);
+    vec3 spotDiffuse = intensity * spotLight.ambientIntensity * spotDiff * spotLight.color;
+    vec3 spotReflectDir = reflect(spotLightDir, normal);
+    float spotSpec = pow(max(dot(viewDir, spotReflectDir), 0.0), material.shininess);
+    vec3 spotSpecular = intensity * material.specularIntensity * spotSpec * spotLight.color;
+
+    return (spotDiffuse + spotSpecular);
 }

@@ -187,6 +187,8 @@ void WindowManager::createWindow(const std::string& title, const GLint width, co
         1, 2, 3
     };
 
+    Mesh::calculateAvgNormals(floorVertices, floorIndices);
+
     std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
     std::cout << "GLSL Version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
     std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
@@ -247,7 +249,7 @@ void WindowManager::updateWindow()
 
         directionalLight->setUniforms(shader, "directionalLight");
         material->setUniforms(shader, "material");
-        pointLight->setUniforms(shader, "pointLight");
+        pointLight->setUniforms(shader, "pointLight[0]");
         spotLight->setUniforms(shader, "spotLight");
 
         mesh->render();

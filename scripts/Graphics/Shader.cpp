@@ -31,6 +31,9 @@ Shader::Shader(const std::string &vertexPath, const std::string &fragmentPath) {
     glLinkProgram(ID);
     checkShaderCompileError(ID, "PROGRAM");
 
+    std::cout << "Opengl Shader : " << vertexPath << " Compiled Successfully " << std::endl;
+    std::cout << "Opengl Shader : " << fragmentPath << " Compiled Successfully " << std::endl;
+
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 }
