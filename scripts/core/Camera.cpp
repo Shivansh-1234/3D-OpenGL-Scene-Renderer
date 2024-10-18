@@ -39,18 +39,19 @@ void Camera::processKeyboardInputs(CAMERA_MOVEMENT cameraDirection, float dt) {
 
 void Camera::processMouseInputs(float offSetX, float offSetY, GLboolean constraintPitch) {
     offSetX *= mouseSens;
-    offSetY += mouseSens;
+    offSetY *= mouseSens;
 
     yaw = glm::mod( yaw + offSetX, 360.0f );
 
     yaw += offSetX;
     pitch += offSetY;
 
-    if(constraintPitch) {
-        if (pitch > 89.0f)
-            pitch = 89.0f;
-        if (pitch < -89.0f)
-            pitch = -89.0f;
+
+    if (constraintPitch) {
+        if (pitch > PITCH_LIMIT)
+            pitch = PITCH_LIMIT;
+        if (pitch < -PITCH_LIMIT)
+            pitch = -PITCH_LIMIT;
     }
 
     updateCameraVec();
@@ -58,15 +59,9 @@ void Camera::processMouseInputs(float offSetX, float offSetY, GLboolean constrai
 }
 
 void Camera::processMouseScroll(float offsetY) {
-    if(zoom >= 1.f && zoom <= 45.f) {
+    if (zoom >= 1.f && zoom <= 45.f)
         zoom -= offsetY;
-    }
-    if(zoom >= 45.f){
-        zoom = 45.f;
-    }
-    if(zoom <= 1.f) {
-        zoom = 1.f;
-    }
+    zoom = glm::clamp(zoom, 1.f, 45.f);
 }
 
 void Camera::updateCameraVec() {

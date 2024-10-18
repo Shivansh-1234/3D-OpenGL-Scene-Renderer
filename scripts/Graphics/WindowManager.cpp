@@ -23,10 +23,31 @@ void WindowManager::initStuff() {
 
     input = std::make_shared<Input>();
     camera = std::make_shared<Camera>();
-    texture = std::make_shared<Texture>(RESOURCE_PATH "textures/brick.png");
-    directionalLight= std::make_shared<DirectionalLight>(glm::vec3(1.f, 1.f, 1.f), glm::vec3(-0.2f, -1.f, -0.3f),
-        0.2f, 0.8f);
+    brickTexture = std::make_shared<Texture>(RESOURCE_PATH "textures/brick.png");
+    floorTexture = std::make_shared<Texture>(RESOURCE_PATH "textures/dirt.png");
+    directionalLight= std::make_shared<DirectionalLight>(
+        glm::vec3(1.f, 1.f, 1.f),
+        glm::vec3(-0.2f, -1.f, -0.3f),
+        0.1f,
+        0.1f
+        );
     material = std::make_shared<Material>(glm::vec3(0.5f, 0.5f, 0.5f), 32.f);
+    pointLight = std::make_shared<PointLight>(
+        glm::vec3(0.f, 0.f, 1.f),
+        0.5f,
+        glm::vec3(-4.f, -10.f, 0.f),
+        1.f,
+        0.045f,
+        0.0075f
+        );
+    spotLight = std::make_shared<SpotLight>(
+        glm::vec3(0.f, 1.f, 0.f),
+        0.5f,
+        camera->position,
+        glm::normalize(camera->front),
+        glm::cos(glm::radians(12.5f)),
+        glm::cos(glm::radians(17.5f))
+        );
 }
 
 void WindowManager::pollEvents(SDL_Event& event, bool& isRunning) {
@@ -134,31 +155,45 @@ void WindowManager::createWindow(const std::string& title, const GLint width, co
               << static_cast<int>(linked.patch) << std::endl;
 
 
-
-    std::vector<Vertex> vertices = {
+    //coords for triangle 1 (moved up by 25 floats)
+    std::vector<Vertex> t1Vertices = {
         //position                                                      //texCoords                               //normals
-        {glm::vec3(-1.f, -1.f, 0.f)     ,       glm::vec2(0.f ,0.f)     ,       glm::vec3(-0.66666667f,  0.33333333f,  0.66666667f)},
-        {glm::vec3(0.f, -1.f, 1.f)      ,       glm::vec2(0.5f, 0.f)    ,       glm::vec3(0.66666667f, 0.33333333f, 0.66666667f)},
-        {glm::vec3(1.f, -1.f, 0.f)      ,       glm::vec2(1.f, 0.f)     ,       glm::vec3(0.f,  0.f, -1.f)},
-        {glm::vec3(0.f, 1.f, 0.f)       ,       glm::vec2(0.5f, 1.f)    ,       glm::vec3(0.f, -1.f,  0.f)}
+        {glm::vec3(-1.f, 2.f, -0.6f)     ,     glm::vec2(0.f ,0.f)     ,       glm::vec3(-0.66666667f,  0.33333333f,  0.66666667f)},
+        {glm::vec3(0.f, 2.f, 1.f)        ,     glm::vec2(0.5f, 0.f)    ,       glm::vec3(0.66666667f, 0.33333333f, 0.66666667f)},
+        {glm::vec3(1.f, 2.f, -0.6f)      ,     glm::vec2(1.f, 0.f)     ,       glm::vec3(0.f,  0.f, -1.f)},
+        {glm::vec3(0.f, 3.f, 0.f)        ,     glm::vec2(0.5f, 1.f)    ,       glm::vec3(0.f, -1.f,  0.f)}
     };
 
-
-    std::vector<GLuint> indices = {
+    std::vector<GLuint> t2Indices = {
         0, 3, 1,
         1, 3, 2,
         2, 3, 0,
         0, 1, 2
     };
 
-    Mesh::calculateAvgNormals(vertices, indices);
+    Mesh::calculateAvgNormals(t1Vertices, t2Indices);
+
+    //coords for the floor
+    std::vector<Vertex> floorVertices = {
+        //position                                                      //texCoords                               //normals
+        {glm::vec3(-10.f, 0.f, -10.f)   ,       glm::vec2(0.f ,0.f)     ,       glm::vec3(0.f, -1.f, 0.f)},
+        {glm::vec3(10.f, 0.f, -10.f)    ,       glm::vec2(10.f, 0.f)    ,       glm::vec3(0.f, -1.f, 0.f)},
+        {glm::vec3(-10.f, 0.f, 10.f)    ,       glm::vec2(0.f, 10.f)    ,       glm::vec3(0.f, -1.f, 0.f)},
+        {glm::vec3(10.f, 0.f, 10.f)     ,       glm::vec2(10.f, 10.f)   ,       glm::vec3(0.f, -1.f, 0.f)}
+    };
+
+    std::vector<GLuint> floorIndices = {
+        0, 2, 1,
+        1, 2, 3
+    };
 
     std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
     std::cout << "GLSL Version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
     std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
 
 
-    mesh = std::make_shared<Mesh>(vertices, indices);
+    mesh = std::make_shared<Mesh>(t1Vertices, t2Indices);
+    floorMesh = std::make_shared<Mesh>(floorVertices, floorIndices);
     shader = std::make_shared<Shader>(  SRC_PATH "shaders/vertexShader.glsl",
         SRC_PATH "shaders/fragmentShader.glsl");
 
@@ -186,20 +221,23 @@ void WindowManager::updateWindow()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        texture->bind(0);
+        brickTexture->bind(0);
 
         shader->use();
 
 
         glm::mat4 model = glm::mat4(1.f);
-        model = glm::translate(model, glm::vec3(0.f, triOffsetX, -2.5f));
+        //model = glm::translate(model, glm::vec3(0.f, -10.f, 0.f));
         //model = glm::rotate(model, curlAngle * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
-        model = glm::scale(model, glm::vec3(0.4f, 0.4f, 1.f));
+        //model = glm::scale(model, glm::vec3(0.4f, 0.4f, 1.f));
 
         projectionMatrix = glm::perspective(glm::radians(camera->zoom), ar, 0.1f, 100.0f);
 
 
         viewMatrix = camera->getViewMatrix();
+
+        spotLight->setPosition(camera->position);
+        spotLight->setDirection(camera->front);
 
 
         shader->setMat4("projection", projectionMatrix);
@@ -209,10 +247,17 @@ void WindowManager::updateWindow()
 
         directionalLight->setUniforms(shader, "directionalLight");
         material->setUniforms(shader, "material");
+        pointLight->setUniforms(shader, "pointLight");
+        spotLight->setUniforms(shader, "spotLight");
 
         mesh->render();
+        brickTexture->unbind();
 
-        texture->unbind();
+        floorTexture->bind(0);
+        floorMesh->render();
+
+        floorTexture->unbind();
+
 
         SDL_GL_SwapWindow(m_window);
 
@@ -224,6 +269,7 @@ void WindowManager::updateWindow()
 void WindowManager::cleanUp()
 {
     mesh->cleanup();
+    floorMesh->cleanup();
     //glDeleteShader(shader->ID);
     SDL_GL_DeleteContext(m_context);
     SDL_DestroyWindow(m_window);

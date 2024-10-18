@@ -28,6 +28,10 @@ add_executable(${PROJECT_NAME}
         scripts/Graphics/Lighting/DirectionalLight.h
         scripts/Graphics/Lighting/Material.cpp
         scripts/Graphics/Lighting/Material.h
+        scripts/Graphics/Lighting/PointLight.cpp
+        scripts/Graphics/Lighting/PointLight.h
+        scripts/Graphics/Lighting/SpotLight.cpp
+        scripts/Graphics/Lighting/SpotLight.h
 )
 
 # --- PLATFORM DETECTION ---

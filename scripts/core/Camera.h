@@ -42,6 +42,7 @@ private:
     float lastX = 2560.f / 2.f;
     float lastY = 1440.f / 2.f;
     bool firstMove = true;
+    const float PITCH_LIMIT = 89.0f;
 };
 
 
