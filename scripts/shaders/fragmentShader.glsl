@@ -33,7 +33,7 @@ void main()
 
     // Diffuse Light
     vec3 norm = normalize(Normal);
-    vec3 lightDir = normalize(-directionalLight.direction - FragPos);  // Light direction is opposite to the direction of light source
+    vec3 lightDir = normalize(directionalLight.direction - FragPos);  // Light direction is opposite to the direction of light source
     float diff = max(dot(norm, lightDir), 0.0);
     vec3 diffuse = directionalLight.diffuseIntensity * diff * directionalLight.color;
 
@@ -44,8 +44,8 @@ void main()
     vec3 specular = material.specularIntensity * specularFactor * directionalLight.color;
 
     // Final result combining ambient, diffuse, and specular lighting
-    vec3 result = ambient + diffuse + specular;
+    vec3 result = (ambient + diffuse + specular) * texture(brickTexture, TexCoords).rgb;
 
     // Apply the texture and output the final fragment color
-    FragColor = texture(brickTexture, TexCoords) * vec4(result, 1.0);
+    FragColor = vec4(result, 1.0);
 }
