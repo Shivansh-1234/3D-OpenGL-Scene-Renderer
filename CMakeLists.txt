@@ -85,3 +85,9 @@ target_link_libraries(${PROJECT_NAME} glad)
 # --- GLM Setup (Cross-Platform) ---
 set(GLM_DIR "${CMAKE_SOURCE_DIR}/third_party/glm")
 include_directories(${GLM_DIR})
+
+# --- Assimp Setup ---
+set(ASSIMP_DIR "${CMAKE_SOURCE_DIR}/third_party/assimp")
+include_directories(${ASSIMP_DIR}/include)
+add_subdirectory(${ASSIMP_DIR})
+target_link_libraries(${PROJECT_NAME} assimp)
