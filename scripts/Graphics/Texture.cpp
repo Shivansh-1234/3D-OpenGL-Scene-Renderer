@@ -63,11 +63,20 @@ void Texture::loadTexture(const std::string &path) {
     SDL_FreeSurface(surface);
 }
 
-
-void Texture::bind(GLuint unit) const {
+void Texture::activate(GLuint unit){
     glActiveTexture(GL_TEXTURE0 + unit);
+}
+
+
+void Texture::bind() const {
     glBindTexture(GL_TEXTURE_2D, textureID);
 }
+
+void Texture::activateAndBind(GLuint unit){
+    activate(unit);
+    bind();
+}
+
 
 void Texture::unbind() {
     glBindTexture(GL_TEXTURE_2D, 0);

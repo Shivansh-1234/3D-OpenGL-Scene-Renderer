@@ -18,11 +18,16 @@ public:
     Texture(const std::string& path);
     ~Texture();
 
-    void bind(GLuint unit = 0) const;
+    void activate(GLuint unit);
+    void bind() const;
+    void activateAndBind(GLuint unit);
     void unbind();
     void deleteShader();
 
     GLuint getID() const { return textureID; }
+    const std::string& getType() { return  type; }
+
+    void setType(const std::string& type) { this->type = type; }
 
 private:
     void loadTexture(const std::string& path);
@@ -30,6 +35,7 @@ private:
     int texWidth, texHeight, texChannels;
     GLuint textureID = 0;
     std::string filePath;
+    std::string type;
 };
 
 

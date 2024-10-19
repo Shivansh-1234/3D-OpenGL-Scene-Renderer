@@ -48,6 +48,9 @@ out vec4 FragColor;
 
 uniform sampler2D brickTexture;
 
+uniform sampler2D texture_diffuse1;
+
+
 vec3 calcDirectionalLight(DirectionalLight directionalLight, vec3 normal, vec3 viewDir);
 vec3 calcPointLight(PointLight pointLight, vec3 normal , vec3 viewDir, vec3 fragPos);
 vec3 calcSpotLight(SpotLight spotLight, vec3 normal , vec3 viewDir, vec3 fragPos);
@@ -63,7 +66,7 @@ void main()
     }
     result += calcSpotLight(spotLight, norm, viewDir, FragPos);
 
-    FragColor = texture(brickTexture, TexCoords) * vec4(result, 1.0);
+    FragColor = texture(brickTexture, TexCoords) * texture(texture_diffuse1, TexCoords) * vec4(result, 1.0);
 }
 
 vec3 calcDirectionalLight(DirectionalLight directionalLight, vec3 normal, vec3 viewDir){

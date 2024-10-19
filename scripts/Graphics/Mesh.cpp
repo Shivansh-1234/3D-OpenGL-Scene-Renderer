@@ -1,8 +1,15 @@
 #include "Mesh.h"
 #include <iostream>
 
+#include "Shader.h"
+
 Mesh::Mesh(const std::vector<Vertex> &vertices, const std::vector<GLuint> &indices)
     :vertices(vertices), indices(indices){
+        setupMesh();
+}
+
+Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<GLuint>& indices, const std::vector<Texture>& textures)
+    :vertices(vertices), indices(indices), textures(textures){
         setupMesh();
 }
 
@@ -75,7 +82,29 @@ void Mesh::setupMesh() {
     glBindVertexArray(0);
 }
 
-void Mesh::render() {
+void Mesh::render(const std::shared_ptr<Shader>& shader) {
+
+    GLuint diffuseNr = 1;
+    GLuint specularNr = 1;
+
+    if(!textures.empty()){
+        for(GLuint i = 0; i < textures.size(); i++){
+            textures[i].activate(i);
+            std::string number;
+            std::string name = textures[i].getType();
+            if(name == "texture_diffuse"){
+                number = std::to_string(diffuseNr++);
+            }
+            else if(name == "texture_specular"){
+                number = std::to_string(specularNr++);
+            }
+
+            shader->setInt((name + number).c_str(), i);
+            textures[i].bind();
+        }
+        glActiveTexture(GL_TEXTURE0);
+    }
+
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, static_cast<GLuint>(indices.size()), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);

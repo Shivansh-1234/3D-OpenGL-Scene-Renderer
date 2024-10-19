@@ -28,12 +28,12 @@ void WindowManager::initStuff() {
     directionalLight= std::make_shared<DirectionalLight>(
         glm::vec3(1.f, 1.f, 1.f),
         glm::vec3(-0.2f, -1.f, -0.3f),
-        0.1f,
-        0.1f
+        0.4f,
+        0.4f
         );
-    material = std::make_shared<Material>(glm::vec3(0.5f, 0.5f, 0.5f), 32.f);
+    material = std::make_shared<Material>(glm::vec3(0.2f, 0.2f, 0.2f), 32.f);
     pointLight = std::make_shared<PointLight>(
-        glm::vec3(0.f, 0.f, 1.f),
+        glm::vec3(1.f, 1.f, 1.f),
         0.5f,
         glm::vec3(-4.f, -10.f, 0.f),
         1.f,
@@ -41,7 +41,7 @@ void WindowManager::initStuff() {
         0.0075f
         );
     spotLight = std::make_shared<SpotLight>(
-        glm::vec3(0.f, 1.f, 0.f),
+        glm::vec3(1.f, 1.f, 1.f),
         0.5f,
         camera->position,
         glm::normalize(camera->front),
@@ -198,6 +198,8 @@ void WindowManager::createWindow(const std::string& title, const GLint width, co
     floorMesh = std::make_shared<Mesh>(floorVertices, floorIndices);
     shader = std::make_shared<Shader>(  SRC_PATH "shaders/vertexShader.glsl",
         SRC_PATH "shaders/fragmentShader.glsl");
+    bagpackModel = std::make_shared<Model>(RESOURCE_PATH "models/bagpack/backpack.obj");
+
 
 }
 
@@ -223,7 +225,7 @@ void WindowManager::updateWindow()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        brickTexture->bind(0);
+        brickTexture->activateAndBind(0);
 
         shader->use();
 
@@ -252,14 +254,15 @@ void WindowManager::updateWindow()
         pointLight->setUniforms(shader, "pointLight[0]");
         spotLight->setUniforms(shader, "spotLight");
 
-        mesh->render();
+        mesh->render(shader);
         brickTexture->unbind();
 
-        floorTexture->bind(0);
-        floorMesh->render();
+        floorTexture->activateAndBind(0);
+        floorMesh->render(shader);
 
         floorTexture->unbind();
 
+        bagpackModel->render(shader);
 
         SDL_GL_SwapWindow(m_window);
 

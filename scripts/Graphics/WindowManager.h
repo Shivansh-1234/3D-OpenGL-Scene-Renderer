@@ -11,6 +11,7 @@
 #include "Mesh.h"
 #include "Shader.h"
 #include "Texture.h"
+#include "Model.h"
 #include "../core/Input.h"
 #include "Lighting/DirectionalLight.h"
 #include "Lighting/Material.h"
@@ -89,6 +90,7 @@ private:
     std::shared_ptr<PointLight> pointLight;
     std::shared_ptr<SpotLight> spotLight;
     std::shared_ptr<Material> material;
+    std::shared_ptr<Model> bagpackModel;
 };
 
 
