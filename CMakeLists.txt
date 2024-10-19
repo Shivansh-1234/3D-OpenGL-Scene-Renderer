@@ -88,20 +88,14 @@ target_link_libraries(${PROJECT_NAME} glad)
 set(GLM_DIR "${CMAKE_SOURCE_DIR}/third_party/glm")
 include_directories(${GLM_DIR})
 
-# Add Assimp as a subdirectory
-
-set(BUILD_SHARED_LIBS  OFF) # how I deal with life :D
+# --- Assimp Setup (Cross-Platform) ---
+set(BUILD_SHARED_LIBS  OFF) # was getting major error using shared libs and too tired to fix this
 set(ASSIMP_WARNINGS_AS_ERRORS OFF) # how I deal with life :D
 set(ASSIMP_INSTALL  OFF)
 set(ASSIMP_BUILD_ZLIB  ON)
 set(ASSIMP_INSTALL_PDB  OFF)
-
 add_subdirectory(third_party/assimp)
-
-# Include Assimp headers
 include_directories(third_party/assimp/include)
-
-# Link against Assimp
 target_link_libraries(${PROJECT_NAME} assimp)
 
 
