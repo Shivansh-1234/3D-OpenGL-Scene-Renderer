@@ -99,7 +99,7 @@ void Mesh::render(const std::shared_ptr<Shader>& shader) {
                 number = std::to_string(specularNr++);
             }
 
-            shader->setInt((name + number).c_str(), i);
+            shader->setInt(name + number, i);
             textures[i].bind();
         }
         glActiveTexture(GL_TEXTURE0);

@@ -34,20 +34,29 @@ void Model::loadModel(const std::string& path){
 
 std::vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type, const std::string& typeName){
     std::vector<Texture> textures;
+    std::string texturePath = RESOURCE_PATH "models/bagpack/";
 
     for(GLuint i = 0; i < mat->GetTextureCount(type); i++){
         aiString str;
         mat->GetTexture(type, i , &str);
-        // bool skip = false; //skip loading texture if already loaded
-        // for(GLuint j = 0; j < textures_)
+        bool skip = false; //skip loading texture if already loaded
+        for(GLuint j = 0; j < loadedTextures.size(); j++){
+            if(std::strcmp(loadedTextures[j].getPath().data(), (texturePath + str.C_Str()).c_str()) == 0)
+            {
+                textures.push_back(loadedTextures[j]);
+                skip = true;
+                break;
+            }
+        }
+        if(!skip)
+        {
+            Texture texture(texturePath + str.C_Str());
+            texture.setType(typeName);
+            textures.push_back(texture);
+            loadedTextures.push_back(texture);
+        }
 
-        std::string texturePath = RESOURCE_PATH "models/bagpack/";
-
-        Texture texture(texturePath + str.C_Str());
-        texture.setType(typeName);
-        textures.push_back(texture);
     }
-
 
     return textures;
 }

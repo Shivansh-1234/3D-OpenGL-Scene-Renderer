@@ -26,6 +26,7 @@ public:
 
     GLuint getID() const { return textureID; }
     const std::string& getType() { return  type; }
+    const std::string& getPath() { return filePath; }
 
     void setType(const std::string& type) { this->type = type; }
 

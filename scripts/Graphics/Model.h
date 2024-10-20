@@ -23,6 +23,8 @@ private:
     std::vector<Mesh> meshes;
     std::string directory;
 
+    std::vector<Texture> loadedTextures;
+
     void loadModel(const std::string& path);
     std::vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, const std::string& typeName);
 
