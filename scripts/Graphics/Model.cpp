@@ -41,7 +41,9 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType 
         // bool skip = false; //skip loading texture if already loaded
         // for(GLuint j = 0; j < textures_)
 
-        Texture texture(str.C_Str());
+        std::string texturePath = RESOURCE_PATH "models/bagpack/";
+
+        Texture texture(texturePath + str.C_Str());
         texture.setType(typeName);
         textures.push_back(texture);
     }

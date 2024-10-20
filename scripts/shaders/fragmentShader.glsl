@@ -66,7 +66,7 @@ void main()
     }
     result += calcSpotLight(spotLight, norm, viewDir, FragPos);
 
-    FragColor = texture(brickTexture, TexCoords) * texture(texture_diffuse1, TexCoords) * vec4(result, 1.0);
+    FragColor =  texture(texture_diffuse1, TexCoords) * vec4(result, 1.0) * texture(brickTexture, TexCoords);
 }
 
 vec3 calcDirectionalLight(DirectionalLight directionalLight, vec3 normal, vec3 viewDir){
