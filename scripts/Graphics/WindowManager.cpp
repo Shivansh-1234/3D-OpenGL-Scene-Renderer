@@ -216,8 +216,7 @@ void WindowManager::createWindow(const std::string& title, const GLint width, co
 
     bagpackModel = std::make_shared<Model>(RESOURCE_PATH "models/bagpack/backpack.obj");
     helicopterModel = std::make_shared<Model>(RESOURCE_PATH "models/helicopter/Seahawk.obj");
-
-
+    ironManModel = std::make_shared<Model>(RESOURCE_PATH "models/ironman/IronMan.obj");
 
     //std::cout << "SDL ERRRR : " << IMG_GetError() << std::endl;
 
@@ -269,6 +268,7 @@ void WindowManager::updateWindow()
         shader->setMat4("view", viewMatrix);
         shader->setMat4("model", model);
         shader->setVec3("viewPos", camera->position);
+        shader->setVec3("ironManColor", glm::vec3(1.f));
 
 
         directionalLight->setUniforms(shader, "directionalLight");
@@ -306,7 +306,7 @@ void WindowManager::updateWindow()
         bagpackModel->render(shader);
 
         heliRotationAngle += 0.2f;
-        heliRotationAngle = glm::clamp(heliRotationAngle, 0.f, 360.f);
+        if(heliRotationAngle > 360.f) { heliRotationAngle = 0.f; }
 
         model = glm::translate(model, glm::vec3(-3.f, 3.f, -3.f));
         model = glm::rotate(model, glm::radians(heliRotationAngle), glm::vec3(0.f, 1.f, 0.f));
@@ -314,10 +314,19 @@ void WindowManager::updateWindow()
         model = glm::rotate(model, glm::radians(glm::radians(-90.f)), glm::vec3(1.f, 0.f, 0.f));
         model = glm::scale(model, glm::vec3(0.05f));
 
-
         shader->setMat4("model", model);
 
         helicopterModel->render(shader);
+
+
+        model = glm::scale(model, glm::vec3(0.5f));
+        model = glm::translate(model, glm::vec3(0.f, 75.f, 0.f));
+        shader->setMat4("model", model);
+
+        shader->setVec3("ironManColor", glm::vec3(1.f, 0.f, 0.f));
+
+
+        ironManModel->render(shader);
 
         SDL_GL_SwapWindow(m_window);
 

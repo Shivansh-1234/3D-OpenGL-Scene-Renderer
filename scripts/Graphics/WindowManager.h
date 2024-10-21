@@ -94,7 +94,7 @@ private:
     std::shared_ptr<Material> material;
     std::shared_ptr<Model> bagpackModel;
     std::shared_ptr<Model> helicopterModel;
-
+    std::shared_ptr<Model> ironManModel;
 };
 
 

@@ -36,6 +36,7 @@ uniform DirectionalLight directionalLight;
 uniform Material material;
 uniform PointLight pointLight[NR_POINT_LIGHTS];
 uniform SpotLight spotLight;
+uniform vec3 ironManColor;
 
 uniform vec3 viewPos;
 
@@ -63,7 +64,7 @@ void main()
     }
     result += calcSpotLight(spotLight, norm, viewDir, FragPos);
 
-    FragColor = vec4(result, 1.0) * texture(texture_diffuse1, TexCoords);
+    FragColor = vec4(result, 1.0) * texture(texture_diffuse1, TexCoords) * vec4(ironManColor, 1.0);
 }
 
 vec3 calcDirectionalLight(DirectionalLight directionalLight, vec3 normal, vec3 viewDir){
