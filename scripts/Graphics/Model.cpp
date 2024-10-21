@@ -12,8 +12,8 @@ Model::Model(const std::string& path){
 }
 
 void Model::render(const std::shared_ptr<Shader>& shader){
-    for(auto& mesh : meshes){
-        mesh.render(shader);
+    for(unsigned int i = 0; i < meshes.size(); i++){
+        meshes[i].render(shader);
     }
 }
 
@@ -34,14 +34,14 @@ void Model::loadModel(const std::string& path){
 
 std::vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type, const std::string& typeName){
     std::vector<Texture> textures;
-    std::string texturePath = RESOURCE_PATH "models/bagpack/";
 
     for(GLuint i = 0; i < mat->GetTextureCount(type); i++){
         aiString str;
         mat->GetTexture(type, i , &str);
+        std::string texPath = directory + "/" + std::string(str.C_Str());
         bool skip = false; //skip loading texture if already loaded
         for(GLuint j = 0; j < loadedTextures.size(); j++){
-            if(std::strcmp(loadedTextures[j].getPath().data(), (texturePath + str.C_Str()).c_str()) == 0)
+            if(texPath == loadedTextures[j].getPath())
             {
                 textures.push_back(loadedTextures[j]);
                 skip = true;
@@ -50,10 +50,12 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType 
         }
         if(!skip)
         {
-            Texture texture(texturePath + str.C_Str());
+            Texture texture(texPath);
             texture.setType(typeName);
             textures.push_back(texture);
             loadedTextures.push_back(texture);
+            std::cout << "Loaded Texture ID: " << texture.getID() << " from path: " <<texture.getPath() << std::endl;
+
         }
 
     }
@@ -119,17 +121,24 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene){
     }
 
     //mat processing
-    if(mesh->mMaterialIndex >= 0){
-        aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+    aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
-        std::vector<Texture> diffuseMaps = loadMaterialTextures(material,aiTextureType_DIFFUSE,
-            "texture_diffuse");
-        textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+    std::vector<Texture> diffuseMaps = loadMaterialTextures(material,aiTextureType_DIFFUSE,
+        "texture_diffuse");
+    textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
-        std::vector<Texture> specularMaps = loadMaterialTextures(material,aiTextureType_SPECULAR,
-            "texture_specular");
-        textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
-    }
+    std::vector<Texture> specularMaps = loadMaterialTextures(material,aiTextureType_SPECULAR,
+        "texture_specular");
+    textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+
+    std::vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT,
+        "texture_normal");
+    textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
+
+    std::vector<Texture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT,
+        "texture_height");
+    textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
+
 
     return {vertices, indices, textures};
 }

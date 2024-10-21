@@ -14,22 +14,17 @@ Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<GLuint>& indic
 }
 
 void Mesh::calculateAvgNormals(std::vector<Vertex>& vertices, const std::vector<GLuint>& indices){
-    // Initialize all vertex normals to zero
     for (auto& vertex : vertices) {
         vertex.normal = glm::vec3(0.0f, 0.0f, 0.0f);
     }
 
-    // Loop through all the triangles (indices should be a multiple of 3)
     for (size_t i = 0; i < indices.size(); i += 3) {
-        // Get the vertices of the current triangle
         Vertex& v0 = vertices[indices[i]];
         Vertex& v1 = vertices[indices[i + 1]];
         Vertex& v2 = vertices[indices[i + 2]];
 
-        // Calculate the face normal for this triangle
         glm::vec3 faceNormal = calculateFaceNormal(v0, v1, v2);
 
-        // Accumulate the face normal into each vertex's normal
         v0.normal += faceNormal;
         v1.normal += faceNormal;
         v2.normal += faceNormal;
@@ -42,11 +37,9 @@ void Mesh::calculateAvgNormals(std::vector<Vertex>& vertices, const std::vector<
 }
 
 glm::vec3 Mesh::calculateFaceNormal(const Vertex& v0, const Vertex& v1, const Vertex& v2){
-    // Compute the edges of the triangle
     glm::vec3 edge1 = v1.position - v0.position;
     glm::vec3 edge2 = v2.position - v0.position;
 
-    // Compute the cross product of the two edges
     glm::vec3 normal = glm::normalize(glm::cross(edge1, edge2));
 
     return normal;
@@ -83,31 +76,37 @@ void Mesh::setupMesh() {
 }
 
 void Mesh::render(const std::shared_ptr<Shader>& shader) {
-
-    GLuint diffuseNr = 1;
+    GLuint diffuseNr  = 1;
     GLuint specularNr = 1;
+    GLuint normalNr   = 1;
+    GLuint heightNr   = 1;
 
-    if(!textures.empty()){
-        for(GLuint i = 0; i < textures.size(); i++){
-            textures[i].activate(i);
-            std::string number;
-            std::string name = textures[i].getType();
-            if(name == "texture_diffuse"){
-                number = std::to_string(diffuseNr++);
-            }
-            else if(name == "texture_specular"){
-                number = std::to_string(specularNr++);
-            }
-
-            shader->setInt(name + number, i);
-            textures[i].bind();
+    for(GLuint i = 0; i < textures.size(); i++){
+        std::string number;
+        std::string name = textures[i].getType();
+        if(name == "texture_diffuse"){
+            number = std::to_string(diffuseNr++);
         }
-        glActiveTexture(GL_TEXTURE0);
+        else if(name == "texture_specular"){
+            number = std::to_string(specularNr++);
+        }
+        else if(name == "texture_normal"){
+            number = std::to_string(normalNr++);
+        }
+        else if(name == "texture_height"){
+            number = std::to_string(heightNr++);
+        }
+
+        shader->setInt(name + number, i);
+
+        textures[i].activateAndBind(i);
     }
 
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, static_cast<GLuint>(indices.size()), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
+
+    glActiveTexture(GL_TEXTURE0);
 }
 
 void Mesh::cleanup() {

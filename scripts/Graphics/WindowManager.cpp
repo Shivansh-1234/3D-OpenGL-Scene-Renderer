@@ -1,4 +1,6 @@
 #include "WindowManager.h"
+
+#include <SDL_image.h>
 #include <glad/glad.h>
 
 void clampMouseToWindow(SDL_Window* window, SDL_Event* event) {
@@ -23,6 +25,7 @@ void WindowManager::initStuff() {
 
     input = std::make_shared<Input>();
     camera = std::make_shared<Camera>();
+
     brickTexture = std::make_shared<Texture>(RESOURCE_PATH "textures/brick.png");
     floorTexture = std::make_shared<Texture>(RESOURCE_PATH "textures/dirt.png");
     directionalLight= std::make_shared<DirectionalLight>(
@@ -98,9 +101,14 @@ void WindowManager::createWindow(const std::string& title, const GLint width, co
         exit(-1);
     }
 
+    if (IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG) == 0) {
+        std::cerr << "SDL_image could not initialize! SDL_image Error: " << IMG_GetError() << std::endl;
+        exit(-1);
+    }
+
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 4);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 1);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
 
     m_window = SDL_CreateWindow(title.c_str(),SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,m_width,m_height,
         SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN);
@@ -130,6 +138,9 @@ void WindowManager::createWindow(const std::string& title, const GLint width, co
 
 
     glEnable(GL_DEPTH_TEST);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     glViewport(0, 0, m_width, m_height);
 
@@ -198,8 +209,16 @@ void WindowManager::createWindow(const std::string& title, const GLint width, co
     floorMesh = std::make_shared<Mesh>(floorVertices, floorIndices);
     shader = std::make_shared<Shader>(  SRC_PATH "shaders/vertexShader.glsl",
         SRC_PATH "shaders/fragmentShader.glsl");
+
+    bagpackShader = std::make_shared<Shader>(SRC_PATH "shaders/bagpackVertex.glsl",
+        SRC_PATH "shaders/bagpackFragment.glsl");
+
     bagpackModel = std::make_shared<Model>(RESOURCE_PATH "models/bagpack/backpack.obj");
 
+
+
+
+    //std::cout << "SDL ERRRR : " << IMG_GetError() << std::endl;
 
 }
 
@@ -224,10 +243,11 @@ void WindowManager::updateWindow()
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        shader->use();
+
+
 
         brickTexture->activateAndBind(0);
-
-        shader->use();
 
 
         glm::mat4 model = glm::mat4(1.f);
@@ -249,10 +269,12 @@ void WindowManager::updateWindow()
         shader->setMat4("model", model);
         shader->setVec3("viewPos", camera->position);
 
-        directionalLight->setUniforms(shader, "directionalLight");
-        material->setUniforms(shader, "material");
-        pointLight->setUniforms(shader, "pointLight[0]");
-        spotLight->setUniforms(shader, "spotLight");
+
+
+         directionalLight->setUniforms(shader, "directionalLight");
+         material->setUniforms(shader, "material");
+         pointLight->setUniforms(shader, "pointLight[0]");
+         spotLight->setUniforms(shader, "spotLight");
 
         mesh->render(shader);
         brickTexture->unbind();
@@ -262,7 +284,27 @@ void WindowManager::updateWindow()
 
         floorTexture->unbind();
 
+
+        //bagpackShader->use();
+
+        model = glm::translate(model, glm::vec3(2.f, 2.f, 2.f));
+        model = glm::scale(model, glm::vec3(0.3f));
+
+        shader->setMat4("model", model);
+
+
+        //bagpackShader->setMat4("projection", projectionMatrix);
+        //bagpackShader->setMat4("view", viewMatrix);
+        //bagpackShader->setMat4("model", model);
+
+        //model = glm::translate(model, glm::vec3(3.f, 3.f, 3.f));
+
+
+        //glGetUniformLocation(bagpackShader->ID, "FragColor"
+
+
         bagpackModel->render(shader);
+
 
         SDL_GL_SwapWindow(m_window);
 
@@ -275,7 +317,7 @@ void WindowManager::cleanUp()
 {
     mesh->cleanup();
     floorMesh->cleanup();
-    //glDeleteShader(shader->ID);
+    glDeleteShader(shader->ID);
     SDL_GL_DeleteContext(m_context);
     SDL_DestroyWindow(m_window);
     SDL_Quit();

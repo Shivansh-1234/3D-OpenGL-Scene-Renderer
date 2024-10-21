@@ -5,16 +5,13 @@
 #include <sstream>
 
 Shader::Shader(const std::string &vertexPath, const std::string &fragmentPath) {
-    // Read shader files and store them as std::string (keep them alive)
     std::string vertexShaderCodeStr = readShaderFile(vertexPath);
     std::string fragmentShaderCodeStr = readShaderFile(fragmentPath);
 
-    // Convert to C-style strings for OpenGL
     const char* vertexShaderCode = vertexShaderCodeStr.c_str();
     const char* fragmentShaderCode = fragmentShaderCodeStr.c_str();
 
     GLuint vertexShader, fragmentShader;
-
     vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1 , &vertexShaderCode, NULL);
     glCompileShader(vertexShader);
@@ -29,6 +26,7 @@ Shader::Shader(const std::string &vertexPath, const std::string &fragmentPath) {
     glAttachShader(ID, vertexShader);
     glAttachShader(ID, fragmentShader);
     glLinkProgram(ID);
+
     checkShaderCompileError(ID, "PROGRAM");
 
     std::cout << "Opengl Shader : " << vertexPath << " Compiled Successfully " << std::endl;
@@ -87,28 +85,38 @@ void Shader::checkShaderCompileError(GLuint shader, const std::string& type) {
     GLint success;
     GLchar infoLog[1024];
 
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+    if(type != "PROGRAM"){
+        glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
 
-    if (!success) {
-        // Check for OpenGL errors before retrieving the log
-        GLenum error = glGetError();
-        if (error != GL_NO_ERROR) {
-            std::cerr << "OpenGL error before glGetShaderInfoLog(): " << error << std::endl;
+        if (!success) {
+            // Check for OpenGL errors before retrieving the log
+            GLenum error = glGetError();
+            if (error != GL_NO_ERROR) {
+                std::cerr << "OpenGL error before glGetShaderInfoLog(): " << error << std::endl;
+            }
+
+            // Retrieve the shader compilation log
+            glGetShaderInfoLog(shader, 1024, NULL, infoLog);
+            std::cerr << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n"
+                      << infoLog << "\n -- --------------------------------------------------- -- "
+                      << std::endl;
+
+            // Check for OpenGL errors after retrieving the log
+            error = glGetError();
+            if (error != GL_NO_ERROR) {
+                std::cerr << "OpenGL error after glGetShaderInfoLog(): " << error << std::endl;
+            }
+
+            exit(-1);
         }
-
-        // Retrieve the shader compilation log
-        glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-        std::cerr << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n"
-                  << infoLog << "\n -- --------------------------------------------------- -- "
-                  << std::endl;
-
-        // Check for OpenGL errors after retrieving the log
-        error = glGetError();
-        if (error != GL_NO_ERROR) {
-            std::cerr << "OpenGL error after glGetShaderInfoLog(): " << error << std::endl;
+    }
+    else{
+        glGetProgramiv(shader, GL_LINK_STATUS, &success);
+        if (!success) {
+            glGetProgramInfoLog(shader, 1024, NULL, infoLog);
+            std::cerr << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n"
+                      << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
         }
-
-        exit(-1);
     }
 }
 

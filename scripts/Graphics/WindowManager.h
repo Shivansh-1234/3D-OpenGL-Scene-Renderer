@@ -82,6 +82,7 @@ private:
     std::shared_ptr<Mesh> mesh2;
     std::shared_ptr<Mesh> floorMesh;
     std::shared_ptr<Shader> shader;
+    std::shared_ptr<Shader> bagpackShader;
     std::shared_ptr<Input> input;
     std::shared_ptr<Camera> camera;
     std::shared_ptr<Texture> brickTexture;
@@ -91,6 +92,8 @@ private:
     std::shared_ptr<SpotLight> spotLight;
     std::shared_ptr<Material> material;
     std::shared_ptr<Model> bagpackModel;
+
+
 };
 
 

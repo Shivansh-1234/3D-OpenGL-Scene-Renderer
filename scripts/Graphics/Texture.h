@@ -1,6 +1,7 @@
 #ifndef TEXTURE_H
 #define TEXTURE_H
 
+#include <iostream>
 #include <string>
 #include "glad/glad.h"
 #include "SDL.h"
@@ -29,9 +30,9 @@ public:
     const std::string& getPath() { return filePath; }
 
     void setType(const std::string& type) { this->type = type; }
-
 private:
     void loadTexture(const std::string& path);
+    void flipTextureVertically(SDL_Surface* surface);
 
     int texWidth, texHeight, texChannels;
     GLuint textureID = 0;
