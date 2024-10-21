@@ -75,6 +75,7 @@ private:
     const float toRadians = 3.14159265f / 180.f;
     float curlAngle = 0.f;
     float ar;
+    GLfloat heliRotationAngle = 0.f;
     glm::mat4 projectionMatrix = glm::mat4(1.f);
     glm::mat4 viewMatrix = glm::mat4(1.f);
 
@@ -92,7 +93,7 @@ private:
     std::shared_ptr<SpotLight> spotLight;
     std::shared_ptr<Material> material;
     std::shared_ptr<Model> bagpackModel;
-
+    std::shared_ptr<Model> helicopterModel;
 
 };
 
