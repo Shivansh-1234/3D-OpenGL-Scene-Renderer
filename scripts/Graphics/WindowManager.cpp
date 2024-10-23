@@ -81,6 +81,11 @@ void WindowManager::pollEvents(SDL_Event& event, bool& isRunning) {
 }
 
 void WindowManager::processCameraInput() {
+
+    if(input->isKeyReleased(SDL_SCANCODE_LSHIFT)){
+        std::cout << "SHIFT RELEASED \n";
+    }
+
     if(input->isKeyPressed(SDL_SCANCODE_W)) {
         camera->processKeyboardInputs(CAMERA_MOVEMENT::FORWARD, deltaTime);
     }
@@ -310,7 +315,7 @@ void WindowManager::updateWindow()
 
         model = glm::translate(model, glm::vec3(-3.f, 3.f, -3.f));
         model = glm::rotate(model, glm::radians(heliRotationAngle), glm::vec3(0.f, 1.f, 0.f));
-        model = glm::translate(model, glm::vec3(-12.f, 2.f, 0.f));
+        model = glm::translate(model, glm::vec3(-30.f, 2.f, 0.f));
         model = glm::rotate(model, glm::radians(glm::radians(-90.f)), glm::vec3(1.f, 0.f, 0.f));
         model = glm::scale(model, glm::vec3(0.05f));
 

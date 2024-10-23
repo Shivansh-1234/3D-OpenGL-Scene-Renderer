@@ -11,9 +11,6 @@ void Input::update() {
     SDL_PumpEvents();
 
     keyStates = SDL_GetKeyboardState(NULL);
-
-    keyDown.clear();
-    keyReleased.clear();
 }
 
 void Input::handleEvent(const SDL_Event &event) {
@@ -40,11 +37,15 @@ bool Input::isKeyPressed(SDL_Scancode key) {
 }
 
 bool Input::isKeyDown(SDL_Scancode key) {
-    return keyDown[key];
+    bool keyD = keyDown[key];
+    keyDown.clear();
+    return keyD;
 }
 
 bool Input::isKeyReleased(SDL_Scancode key) {
-    return keyReleased[key];
+    bool keyR = keyReleased[key];
+    keyReleased.clear();
+    return keyR;
 }
 
 bool Input::isMouseButtonPressed(Uint8 mButton) {

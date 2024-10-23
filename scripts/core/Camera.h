@@ -31,7 +31,7 @@ public:
     float yaw = -90.f;
     float pitch = 0.f;
     float movementSpeed = 2.5f;
-    float mouseSens = 0.3f;
+    float mouseSens = 0.1f;
     float zoom = 45.f;
 
     void mouse_callback(float xpos, float ypos);
