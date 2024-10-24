@@ -29,27 +29,6 @@ public:
     void createWindow(const std::string& title, const GLint width, const GLint height);
     void updateWindow();
     void cleanUp();
-
-    SDL_Window* m_window1() const
-    {
-        return m_window;
-    }
-
-    GLint m_width1() const
-    {
-        return m_width;
-    }
-
-    GLint m_height1() const
-    {
-        return m_height;
-    }
-
-    bool m_is_running() const
-    {
-        return m_isRunning;
-    }
-
 private:
     WindowManager() : m_width(2560), m_height(1440), m_window(nullptr), m_context(nullptr) {}
     ~WindowManager() = default;

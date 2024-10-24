@@ -81,11 +81,12 @@ void WindowManager::pollEvents(SDL_Event& event, bool& isRunning) {
 }
 
 void WindowManager::processCameraInput() {
-
-    if(input->isKeyReleased(SDL_SCANCODE_LSHIFT)){
-        std::cout << "SHIFT RELEASED \n";
+    if(input->isKeyDown(SDL_SCANCODE_LSHIFT)){
+        camera->movementSpeed = 5.0f;
     }
-
+    if(input->isKeyReleased(SDL_SCANCODE_LSHIFT)){
+        camera->movementSpeed = 2.5f;
+    }
     if(input->isKeyPressed(SDL_SCANCODE_W)) {
         camera->processKeyboardInputs(CAMERA_MOVEMENT::FORWARD, deltaTime);
     }
